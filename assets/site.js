@@ -53,7 +53,6 @@
           megaItem('publicacoes.html', 'database', 'Dados abertos', 'Conjuntos de dados públicos para pesquisa') +
           megaItem('publicacoes.html', 'wrench', 'Ferramentas', 'Plataformas de análise métrica') +
           megaItem('sobre.html', 'flask-conical', 'Metodologia', 'Abordagens quantitativas e qualitativas') +
-          megaItem('contato.html', 'mail', 'Contato', 'Envie uma mensagem ao laboratório') +
         '</div>' +
         '<div class="mega-col"><h4>Institucional</h4>' +
           megaItem('https://ichca.ufal.br', 'building-2', 'ICHCA', 'Inst. de Ciências Humanas, Comunicação e Artes', true) +
@@ -63,14 +62,11 @@
         '</div>' +
         '<div class="mega-col"><h4>Comunidade</h4>' +
           megaItem('equipe.html', 'users', 'Colaboradores', 'Pesquisadores parceiros e redes de trabalho') +
-          megaItem('blog.html', 'calendar', 'Eventos', 'Seminários e encontros científicos') +
-          megaItem('contato.html', 'briefcase', 'Oportunidades', 'Bolsas e posições de pesquisa') +
-          megaItem('blog.html', 'newspaper', 'Notícias', 'Atualizações do laboratório e pesquisas') +
         '</div>' +
       '</div>' +
       '<div class="mega-bottom">' +
-        '<span class="ask">Quer conhecer nosso trabalho? <a href="contato.html">Envie uma mensagem</a></span>' +
-        '<span class="mb-actions"><a href="contato.html"><i data-lucide="contact"></i> Fale conosco</a>' +
+        '<span class="ask">Quer conhecer nosso trabalho?</span>' +
+        '<span class="mb-actions">' +
         '<a href="publicacoes.html"><i data-lucide="search"></i> Explorar</a></span>' +
       '</div>' +
     '</div>';
@@ -94,12 +90,11 @@
       '</div>' +
       '<hr class="foot-divider" />' +
       '<div class="foot-links">' +
-        col('Navegação', [['Sobre','sobre.html'],['Pesquisas','publicacoes.html'],['Equipe','equipe.html'],['Publicações','publicacoes.html'],['Blog','blog.html']]) +
-        col('Linhas ativas', [['Metodologia','sobre.html#linhas'],['Projetos','publicacoes.html'],['Estudos','sobre.html#linhas'],['Contato','contato.html'],['Fale conosco','contato.html']]) +
-        col('Maceió, AL', [['Email','mailto:ronaldfa@gmail.com'],['Redes sociais','contato.html'],['Comunidade','equipe.html'],['Recursos','publicacoes.html'],['Dados abertos','publicacoes.html']]) +
+        col('Navegação', [['Sobre','sobre.html'],['Pesquisas','publicacoes.html'],['Equipe','equipe.html'],['Publicações','publicacoes.html']]) +
+        col('Linhas ativas', [['Metodologia','sobre.html#linhas'],['Projetos','publicacoes.html'],['Estudos','sobre.html#linhas']]) +
+        col('Maceió, AL', [['Email','mailto:ronaldfa@gmail.com'],['Comunidade','equipe.html'],['Recursos','publicacoes.html'],['Dados abertos','publicacoes.html']]) +
         col('Documentação', [['Ferramentas','publicacoes.html'],['Repositório','publicacoes.html'],['Sobre nós','sobre.html'],['Missão','sobre.html'],['Histórico','sobre.html']]) +
         col('Parcerias', [['Certificações','sobre.html'],['Políticas','#'],['Privacidade','#'],['Termos de uso','#'],['Código de conduta','#']]) +
-        col('Acessibilidade', [['Suporte','contato.html'],['Fale conosco','contato.html'],['FAQ','contato.html'],['Reportar problema','contato.html'],['Feedback','contato.html']]) +
       '</div>' +
       '<hr class="foot-divider" />' +
       '<div class="foot-credits">' + LOGO +
