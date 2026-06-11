@@ -62,6 +62,7 @@
         '</div>' +
         '<div class="mega-col"><h4>Comunidade</h4>' +
           megaItem('equipe.html', 'users', 'Colaboradores', 'Pesquisadores parceiros e redes de trabalho') +
+          megaItem('https://tweetscovid-production.up.railway.app/', 'layout-dashboard', 'Dashboard', 'Visualização interativa de dados do laboratório', true) +
         '</div>' +
       '</div>' +
       '<div class="mega-bottom">' +

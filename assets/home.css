@@ -180,7 +180,7 @@ ul { list-style: none; }
 }
 .mega-item .ic svg { width: 22px; height: 22px; }
 .mega-item .tt { font-family: var(--sans); font-weight: 500; font-size: 16px; color: var(--white); }
-.mega-item .dd { font-size: 13px; color: var(--body-dim); line-height: 1.45; margin-top: 6px; }
+.mega-item .dd { font-size: 13px; color: var(--body-dim); line-height: 1.45; margin-top: 8px; }
 .mega-bottom {
   background: var(--surface); border-top: 1px solid var(--line);
   display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
