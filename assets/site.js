@@ -36,8 +36,10 @@
 
   function megaItem(href, ic, tt, dd, ext) {
     var t = ext ? ' target="_blank" rel="noopener"' : '';
-    return '<a class="mega-item" href="' + href + '"' + t + '><span class="ic"><i data-lucide="' + ic + '"></i></span>' +
-      '<span><span class="tt">' + tt + '</span><span class="dd">' + dd + '</span></span></a>';
+    return '<a class="mega-item" href="' + href + '"' + t + '>' +
+      '<span class="mega-top"><span class="ic"><i data-lucide="' + ic + '"></i></span><span class="tt">' + tt + '</span></span>' +
+      '<span class="dd">' + dd + '</span>' +
+    '</a>';
   }
   function megaHTML() {
     return '' +
