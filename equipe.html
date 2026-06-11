@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Equipe — Lab-iMetrics</title>
+<meta name="description" content="Pesquisadores doutores, estudantes e técnicos do Lab-iMetrics. 28+ integrantes ativos no ICHCA/UFAL." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;700&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&family=Roboto:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/home.css" />
+<link rel="stylesheet" href="assets/pages.css" />
+</head>
+<body data-page="equipe">
+
+<div data-chrome="header"></div>
+
+<main>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="container">
+    <div class="inner">
+      <span class="tagline reveal">Equipe</span>
+      <h1 class="h-hero reveal" data-d="1">Quem mede a ciência.</h1>
+      <p class="lead reveal" data-d="2">28+ integrantes ativos: 12 pesquisadores doutores, 14 estudantes de graduação, mestrado e doutorado, e 2 técnicos. Esta página recebe os perfis à medida que fotos e links são confirmados.</p>
+      <div class="team-stats reveal" data-d="3">
+        <span><b>12</b> doutores</span>
+        <span><b>14</b> estudantes</span>
+        <span><b>2</b> técnicos</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="hairline" />
+
+<!-- COORDENAÇÃO -->
+<section class="section band-light">
+  <div class="container">
+    <div class="sec-head reveal"><span class="tagline">Coordenação</span><h2 class="h-sec">Fundadores</h2></div>
+    <div class="team-grid cols-2 reveal" style="margin-top:48px;">
+      <article class="person">
+        <div class="person-avatar"><span>RA</span></div>
+        <div class="person-body">
+          <h3 class="h-card">Prof. Dr. Ronaldo Ferreira de Araújo</h3>
+          <p class="person-role">Coordenador · Fundador</p>
+          <p class="person-area">Altmetria · cibermetria · comunicação científica</p>
+          <div class="person-links"><a class="badge teal"><i data-lucide="external-link"></i> Lattes</a><a class="badge teal"><i data-lucide="external-link"></i> ORCID</a></div>
+        </div>
+      </article>
+      <article class="person">
+        <div class="person-avatar"><span>RV</span></div>
+        <div class="person-body">
+          <h3 class="h-card">Profa. Dra. Roberia de Lourdes de Vasconcelos Andrade</h3>
+          <p class="person-role">Coordenadora · Fundadora</p>
+          <p class="person-area">Ciência da informação · estudos métricos</p>
+          <div class="person-links"><a class="badge teal"><i data-lucide="external-link"></i> Lattes</a><a class="badge teal"><i data-lucide="external-link"></i> ORCID</a></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<hr class="hairline" />
+
+<!-- DOUTORES -->
+<section class="section">
+  <div class="container">
+    <div class="sec-head reveal"><span class="tagline">Pesquisadores</span><h2 class="h-sec">Doutores</h2><p class="lead">10 perfis a confirmar — cada card recebe foto, área de atuação e links para Lattes/ORCID.</p></div>
+    <div class="team-grid reveal" id="doutores-grid" style="margin-top:48px;"></div>
+  </div>
+</section>
+
+<hr class="hairline" />
+
+<!-- ESTUDANTES -->
+<section class="section band-light">
+  <div class="container">
+    <div class="sec-head reveal"><span class="tagline">Estudantes</span><h2 class="h-sec">Graduação, mestrado e doutorado</h2><p class="lead">14 estudantes ativos distribuídos nas três linhas de pesquisa.</p></div>
+    <div class="team-grid reveal" id="estudantes-grid" style="margin-top:48px;"></div>
+  </div>
+</section>
+
+<hr class="hairline" />
+
+<!-- TÉCNICOS -->
+<section class="section">
+  <div class="container">
+    <div class="sec-head reveal"><span class="tagline">Apoio</span><h2 class="h-sec">Técnicos</h2></div>
+    <div class="team-grid cols-2 reveal" id="tecnicos-grid" style="margin-top:48px;"></div>
+  </div>
+</section>
+
+</main>
+
+<div data-chrome="footer"></div>
+
+<script src="https://unpkg.com/lucide@0.298.0/dist/umd/lucide.min.js"></script>
+<script>
+  (function () {
+    function slot(tag) {
+      var d = document.createElement('article');
+      d.className = 'person person-slot reveal';
+      d.innerHTML = '<div class="person-avatar empty"><i data-lucide="user"></i></div>' +
+        '<div class="person-body"><span class="slot-tag"><i data-lucide="edit-3"></i>' + tag + '</span>' +
+        '<p class="slot-line"></p><p class="slot-line short"></p></div>';
+      return d;
+    }
+    function fill(id, n, tag) {
+      var g = document.getElementById(id); if (!g) return;
+      for (var i = 1; i <= n; i++) g.appendChild(slot(tag + ' ' + String(i).padStart(2, '0')));
+    }
+    fill('doutores-grid', 10, 'Doutor(a)');
+    fill('estudantes-grid', 14, 'Estudante');
+    fill('tecnicos-grid', 2, 'Técnico(a)');
+  })();
+</script>
+<script src="assets/site.js"></script>
+</body>
+</html>

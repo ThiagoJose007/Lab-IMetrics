@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Publicações — Lab-iMetrics</title>
+<meta name="description" content="Mais de 140 trabalhos em altmetria, bibliometria e cienciometria. Lista filtrável por ano, linha e tipo, com DOI e Altmetric Score." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;700&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&family=Roboto:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/home.css" />
+<link rel="stylesheet" href="assets/pages.css" />
+</head>
+<body data-page="publicacoes">
+
+<div data-chrome="header"></div>
+
+<main>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="container">
+    <div class="inner">
+      <span class="tagline reveal">Publicações</span>
+      <h1 class="h-hero reveal" data-d="1">140+ trabalhos, em acesso aberto.</h1>
+      <p class="lead reveal" data-d="2">Artigos, dissertações, teses e relatórios em altmetria, bibliometria e cienciometria. Filtre por ano, linha de pesquisa e tipo — com DOI e Altmetric Score quando disponíveis.</p>
+      <p class="note-line reveal" data-d="3"><i data-lucide="info"></i> Lista ilustrativa — as entradas abaixo são modelos prontos para receber os dados reais do lab.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section band-light" style="padding-top:clamp(32px,4vw,48px);">
+  <div class="container">
+
+    <div class="filters reveal">
+      <div class="filter-group" data-filter-group="year">
+        <span class="filter-label">Ano</span>
+        <div class="chips">
+          <button class="chip active" data-val="all">Todos</button>
+          <button class="chip" data-val="2025">2025</button>
+          <button class="chip" data-val="2024">2024</button>
+          <button class="chip" data-val="2023">2023</button>
+        </div>
+      </div>
+      <div class="filter-group" data-filter-group="line">
+        <span class="filter-label">Linha</span>
+        <div class="chips">
+          <button class="chip active" data-val="all">Todas</button>
+          <button class="chip" data-val="L1">L1 · Cibermetria</button>
+          <button class="chip" data-val="L2">L2 · Altmetria</button>
+          <button class="chip" data-val="L3">L3 · Soberania</button>
+        </div>
+      </div>
+      <div class="filter-group" data-filter-group="type">
+        <span class="filter-label">Tipo</span>
+        <div class="chips">
+          <button class="chip active" data-val="all">Todos</button>
+          <button class="chip" data-val="artigo">Artigo</button>
+          <button class="chip" data-val="dissertacao">Dissertação</button>
+          <button class="chip" data-val="tese">Tese</button>
+          <button class="chip" data-val="congresso">Congresso</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pub-count-bar reveal"><span class="mono"><span id="pub-count">8</span> resultados</span></div>
+
+    <div class="pub-list">
+      <article class="pub reveal" data-pub data-year="2025" data-line="L2" data-type="artigo">
+        <div class="pub-main"><div class="pub-tags"><span class="badge teal">L2 · Altmetria</span><span class="badge">Artigo</span></div>
+          <h3 class="pub-title">Menções sociais como preditoras de citação em periódicos nacionais</h3>
+          <p class="pub-authors">Autoria a confirmar · Periódico · 2025</p><p class="pub-doi">DOI: 10.0000/exemplo-0001</p></div>
+        <div class="pub-aside"><div class="altmetric high"><span class="alt-score">142</span><span class="alt-label">Altmetric</span></div><a class="btn-link" href="#">Acesso aberto <i data-lucide="arrow-up-right"></i></a></div>
+      </article>
+      <article class="pub reveal" data-pub data-year="2025" data-line="L1" data-type="dissertacao">
+        <div class="pub-main"><div class="pub-tags"><span class="badge teal">L1 · Cibermetria</span><span class="badge">Dissertação</span></div>
+          <h3 class="pub-title">Sociabilidades e mediação da informação em comunidades digitais</h3>
+          <p class="pub-authors">Autoria a confirmar · PPGCI/UFAL · 2025</p><p class="pub-doi">Repositório: a confirmar</p></div>
+        <div class="pub-aside"><div class="altmetric"><span class="alt-score">38</span><span class="alt-label">Altmetric</span></div><a class="btn-link" href="#">Acesso aberto <i data-lucide="arrow-up-right"></i></a></div>
+      </article>
+      <article class="pub reveal" data-pub data-year="2024" data-line="L2" data-type="artigo">
+        <div class="pub-main"><div class="pub-tags"><span class="badge teal">L2 · Altmetria</span><span class="badge">Artigo</span></div>
+          <h3 class="pub-title">Ciência aberta e presença social da pesquisa brasileira no Mendeley</h3>
+          <p class="pub-authors">Autoria a confirmar · Periódico internacional · 2024</p><p class="pub-doi">DOI: 10.0000/exemplo-0002</p></div>
+        <div class="pub-aside"><div class="altmetric high"><span class="alt-score">96</span><span class="alt-label">Altmetric</span></div><a class="btn-link" href="#">Acesso aberto <i data-lucide="arrow-up-right"></i></a></div>
+      </article>
+      <article class="pub reveal" data-pub data-year="2024" data-line="L3" data-type="artigo">
+        <div class="pub-main"><div class="pub-tags"><span class="badge teal">L3 · Soberania</span><span class="badge">Artigo</span></div>
+          <h3 class="pub-title">Geopolíticas da ciência e justiça epistêmica no Sul Global</h3>
+          <p class="pub-authors">Autoria a confirmar · Periódico · 2024</p><p class="pub-doi">DOI: 10.0000/exemplo-0003</p></div>
+        <div class="pub-aside"><div class="altmetric"><span class="alt-score">54</span><span class="alt-label">Altmetric</span></div><a class="btn-link" href="#">Acesso aberto <i data-lucide="arrow-up-right"></i></a></div>
+      </article>
+      <article class="pub reveal" data-pub data-year="2024" data-line="L2" data-type="tese">
+        <div class="pub-main"><div class="pub-tags"><span class="badge teal">L2 · Altmetria</span><span class="badge">Tese</span></div>
+          <h3 class="pub-title">Desinformação científica e debate público da ciência pós-2020</h3>
+          <p class="pub-authors">Autoria a confirmar · PPGCI/UFAL · 2024</p><p class="pub-doi">Repositório: a confirmar</p></div>
+        <div class="pub-aside"><div class="altmetric high"><span class="alt-score">71</span><span class="alt-label">Altmetric</span></div><a class="btn-link" href="#">Acesso aberto <i data-lucide="arrow-up-right"></i></a></div>
+      </article>
+      <article class="pub reveal" data-pub data-year="2023" data-line="L1" data-type="congresso">
+        <div class="pub-main"><div class="pub-tags"><span class="badge teal">L1 · Cibermetria</span><span class="badge">Congresso</span></div>
+          <h3 class="pub-title">Webometria e análise de presença digital da ciência — ENANCIB</h3>
+          <p class="pub-authors">Autoria a confirmar · Anais ENANCIB · 2023</p><p class="pub-doi">DOI: 10.0000/exemplo-0004</p></div>
+        <div class="pub-aside"><div class="altmetric"><span class="alt-score">22</span><span class="alt-label">Altmetric</span></div><a class="btn-link" href="#">Acesso aberto <i data-lucide="arrow-up-right"></i></a></div>
+      </article>
+      <article class="pub reveal" data-pub data-year="2023" data-line="L2" data-type="artigo">
+        <div class="pub-main"><div class="pub-tags"><span class="badge teal">L2 · Altmetria</span><span class="badge">Artigo</span></div>
+          <h3 class="pub-title">Semantometria aplicada à avaliação de impacto não-tradicional</h3>
+          <p class="pub-authors">Autoria a confirmar · Periódico · 2023</p><p class="pub-doi">DOI: 10.0000/exemplo-0005</p></div>
+        <div class="pub-aside"><div class="altmetric"><span class="alt-score">45</span><span class="alt-label">Altmetric</span></div><a class="btn-link" href="#">Acesso aberto <i data-lucide="arrow-up-right"></i></a></div>
+      </article>
+      <article class="pub reveal" data-pub data-year="2023" data-line="L3" data-type="dissertacao">
+        <div class="pub-main"><div class="pub-tags"><span class="badge teal">L3 · Soberania</span><span class="badge">Dissertação</span></div>
+          <h3 class="pub-title">Integridade da pesquisa e soberania científica em periódicos nacionais</h3>
+          <p class="pub-authors">Autoria a confirmar · PPGCI/UFAL · 2023</p><p class="pub-doi">Repositório: a confirmar</p></div>
+        <div class="pub-aside"><div class="altmetric"><span class="alt-score">19</span><span class="alt-label">Altmetric</span></div><a class="btn-link" href="#">Acesso aberto <i data-lucide="arrow-up-right"></i></a></div>
+      </article>
+    </div>
+
+    <div class="pub-empty reveal">
+      <span class="slot-tag"><i data-lucide="edit-3"></i>Catálogo completo — a preencher</span>
+      <p>Importe os 140+ registros do lab (Lattes, repositório ou planilha). Cada entrada usa ano, linha e tipo para os filtros, mais DOI e Altmetric Score.</p>
+    </div>
+
+  </div>
+</section>
+
+</main>
+
+<div data-chrome="footer"></div>
+
+<script src="https://unpkg.com/lucide@0.298.0/dist/umd/lucide.min.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>
