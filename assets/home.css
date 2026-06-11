@@ -175,11 +175,10 @@ ul { list-style: none; }
 }
 .mega-item { display: block; padding: 11px 0; transition: opacity .2s ease; }
 .mega-item:hover { opacity: 1; }
-.mega-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.mega-top { display: flex; align-items: center; gap: 10px; }
 .mega-item .ic { flex: 0 0 22px; width: 22px; height: 22px; color: var(--teal); overflow: hidden; }
 .mega-item .ic svg { width: 22px; height: 22px; display: block; }
 .mega-item .tt { font-family: var(--sans); font-weight: 500; font-size: 16px; color: var(--white); }
-.mega-item .dd { font-size: 13px; color: var(--body-dim); line-height: 1.45; padding-left: 32px; }
 .mega-bottom {
   background: var(--surface); border-top: 1px solid var(--line);
   display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
