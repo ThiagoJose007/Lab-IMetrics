@@ -332,6 +332,7 @@ ul { list-style: none; }
   .foot-links { grid-template-columns: 1fr 1fr; }
   .mega-grid { grid-template-columns: 1fr; gap: 8px; padding-block: 24px; }
   .mega-col { border-bottom: 1px solid var(--line-soft); padding-bottom: 8px; }
+  .site-header.menu-open .mega { max-height: calc(100vh - 64px); overflow-y: auto; }
 }
 @media (max-width: 420px) {
   .menu-toggle .lbl-open, .menu-toggle .lbl-close { display: none; }
