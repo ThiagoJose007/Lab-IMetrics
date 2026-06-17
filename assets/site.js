@@ -22,6 +22,7 @@
             lk('sobre.html', 'Sobre', 'sobre') +
             lk('publicacoes.html', 'Pesquisas', 'publicacoes') +
             lk('equipe.html', 'Equipe', 'equipe') +
+            '<a href="https://tweetscovid-production.up.railway.app/" target="_blank" rel="noopener">Dashboard</a>' +
             '<button class="nav-more" data-menu-more aria-label="Mais">Mais <i data-lucide="chevron-down"></i></button>' +
           '</nav>' +
         '</div>' +
