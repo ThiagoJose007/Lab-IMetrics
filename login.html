@@ -93,7 +93,7 @@
 
   // Se já estiver logado, vai direto para o admin
   if (localStorage.getItem('imetrics_token')) {
-    window.location.href = 'admin.html';
+    window.location.href = '/admin';
   }
 
   document.getElementById('login-form').addEventListener('submit', async function (e) {
@@ -114,7 +114,7 @@
       var data = await res.json();
       if (!res.ok) throw new Error(data.erro || 'Erro');
       localStorage.setItem('imetrics_token', data.token);
-      window.location.href = 'admin.html';
+      window.location.href = '/admin';
     } catch (err) {
       erro.textContent = err.message === 'Failed to fetch'
         ? 'Não foi possível conectar à API. Verifique se ela está rodando.'
