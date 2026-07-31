@@ -21,8 +21,15 @@ router.post('/login', loginLimit, async (req, res) => {
   const valida = await bcrypt.compare(senha, hash);
   if (!valida) return res.status(401).json({ erro: 'Senha incorreta' });
 
-  const token = jwt.sign({ role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '8h' });
-  res.json({ token, expira: '8h' });
+  // Expira às 3h da madrugada (horário de Brasília = UTC-3)
+  const agora = new Date();
+  const expira = new Date();
+  expira.setUTCHours(6, 0, 0, 0); // 03:00 BRT = 06:00 UTC
+  if (expira <= agora) expira.setUTCDate(expira.getUTCDate() + 1);
+  const exp = Math.floor(expira.getTime() / 1000);
+
+  const token = jwt.sign({ role: 'admin', exp }, process.env.JWT_SECRET);
+  res.json({ token, expira: expira.toISOString() });
 });
 
 module.exports = router;
