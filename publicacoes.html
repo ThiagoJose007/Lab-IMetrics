@@ -10,6 +10,69 @@
 <link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;700&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&family=Roboto:wght@500;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="assets/home.css" />
 <link rel="stylesheet" href="assets/pages.css" />
+<style>
+  /* Modal */
+  .pub-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.75); z-index: 500;
+    align-items: center; justify-content: center;
+    padding: 24px 16px; overflow-y: auto;
+  }
+  .pub-overlay.open { display: flex; }
+  .pub-modal {
+    background: var(--ink); border: 1px solid var(--line);
+    border-radius: 12px; width: 100%; max-width: 680px;
+    padding: 40px; position: relative;
+    animation: modal-in .2s ease;
+  }
+  @keyframes modal-in { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+  .pub-modal-close {
+    position: absolute; top: 18px; right: 20px;
+    background: none; border: none; color: var(--body-dim);
+    font-size: 1.5rem; cursor: pointer; line-height: 1; padding: 4px;
+    transition: color .2s;
+  }
+  .pub-modal-close:hover { color: var(--white); }
+  .pub-modal-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .pub-modal-title {
+    font-family: var(--serif); font-weight: 700;
+    font-size: clamp(1.2rem, 2.2vw, 1.6rem); line-height: 1.35;
+    color: var(--white); margin-bottom: 14px;
+  }
+  .pub-modal-authors { color: var(--body); font-size: 0.95rem; margin-bottom: 6px; }
+  .pub-modal-meta {
+    font-family: var(--mono); font-size: 0.75rem; color: var(--body-dim);
+    margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 6px 18px;
+  }
+  .pub-modal-meta span { display: inline-flex; align-items: center; gap: 5px; }
+  .pub-modal-divider { height: 1px; background: var(--line); margin: 20px 0; }
+  .pub-modal-resumo-label {
+    font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--body-dim); margin-bottom: 10px;
+  }
+  .pub-modal-resumo { color: var(--body); font-size: 0.96rem; line-height: 1.7; }
+  .pub-modal-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+  .btn-acesso {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--amber); color: #0B1120;
+    font-family: var(--sans); font-weight: 700; font-size: 0.9rem;
+    padding: 12px 22px; border-radius: 8px; text-decoration: none;
+    transition: opacity .2s; border: none; cursor: pointer;
+  }
+  .btn-acesso:hover { opacity: 0.88; }
+  .btn-download {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: none; color: var(--white);
+    font-family: var(--sans); font-weight: 500; font-size: 0.9rem;
+    padding: 12px 22px; border-radius: 8px; text-decoration: none;
+    border: 1px solid var(--line); transition: border-color .2s, color .2s;
+  }
+  .btn-download:hover { border-color: rgba(255,255,255,0.35); }
+  .btn-disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+
+  /* Card clicável */
+  .pub { cursor: pointer; }
+</style>
 </head>
 <body data-page="publicacoes">
 
@@ -17,14 +80,12 @@
 
 <main>
 
-<!-- PAGE HERO -->
 <section class="page-hero">
   <div class="container">
     <div class="inner">
       <span class="tagline reveal">Publicações</span>
       <h1 class="h-hero reveal" data-d="1">140+ trabalhos, em acesso aberto.</h1>
-      <p class="lead reveal" data-d="2">Artigos, dissertações, teses e relatórios em altmetria, bibliometria e cienciometria. Filtre por ano, linha de pesquisa e tipo — com DOI e Altmetric Score quando disponíveis.</p>
-      <p class="note-line reveal" data-d="3"><i data-lucide="info"></i> Lista ilustrativa — as entradas abaixo são modelos prontos para receber os dados reais do lab.</p>
+      <p class="lead reveal" data-d="2">Artigos, dissertações, teses e relatórios em altmetria, bibliometria e cienciometria. Filtre por ano, linha de pesquisa e tipo — com DOI quando disponível.</p>
     </div>
   </div>
 </section>
@@ -33,92 +94,46 @@
   <div class="container">
 
     <div class="filters reveal">
-      <div class="filter-group" data-filter-group="year">
+      <div class="filter-group">
         <span class="filter-label">Ano</span>
-        <div class="chips">
-          <button class="chip active" data-val="all">Todos</button>
-          <button class="chip" data-val="2025">2025</button>
-          <button class="chip" data-val="2024">2024</button>
-          <button class="chip" data-val="2023">2023</button>
+        <div class="chips" id="chips-ano">
+          <button class="chip active" data-filtro="ano" data-val="all">Todos</button>
         </div>
       </div>
-      <div class="filter-group" data-filter-group="line">
+      <div class="filter-group">
         <span class="filter-label">Linha</span>
         <div class="chips">
-          <button class="chip active" data-val="all">Todas</button>
-          <button class="chip" data-val="L1">L1 · Cibermetria</button>
-          <button class="chip" data-val="L2">L2 · Altmetria</button>
-          <button class="chip" data-val="L3">L3 · Soberania</button>
+          <button class="chip active" data-filtro="linha" data-val="all">Todas</button>
+          <button class="chip" data-filtro="linha" data-val="L1">L1 · Cibermetria</button>
+          <button class="chip" data-filtro="linha" data-val="L2">L2 · Altmetria</button>
+          <button class="chip" data-filtro="linha" data-val="L3">L3 · Soberania</button>
         </div>
       </div>
-      <div class="filter-group" data-filter-group="type">
+      <div class="filter-group">
         <span class="filter-label">Tipo</span>
         <div class="chips">
-          <button class="chip active" data-val="all">Todos</button>
-          <button class="chip" data-val="artigo">Artigo</button>
-          <button class="chip" data-val="dissertacao">Dissertação</button>
-          <button class="chip" data-val="tese">Tese</button>
-          <button class="chip" data-val="congresso">Congresso</button>
+          <button class="chip active" data-filtro="tipo" data-val="all">Todos</button>
+          <button class="chip" data-filtro="tipo" data-val="artigo">Artigo</button>
+          <button class="chip" data-filtro="tipo" data-val="dissertacao">Dissertação</button>
+          <button class="chip" data-filtro="tipo" data-val="tese">Tese</button>
+          <button class="chip" data-filtro="tipo" data-val="congresso">Congresso</button>
         </div>
       </div>
     </div>
 
-    <div class="pub-count-bar reveal"><span class="mono"><span id="pub-count">8</span> resultados</span></div>
-
-    <div class="pub-list">
-      <article class="pub reveal" data-pub data-year="2025" data-line="L2" data-type="artigo">
-        <div class="pub-main"><div class="pub-tags"><span class="badge teal">L2 · Altmetria</span><span class="badge">Artigo</span></div>
-          <h3 class="pub-title">Menções sociais como preditoras de citação em periódicos nacionais</h3>
-          <p class="pub-authors">Autoria a confirmar · Periódico · 2025</p><p class="pub-doi">DOI: 10.0000/exemplo-0001</p></div>
-        <div class="pub-aside"><div class="altmetric high"><span class="alt-score">142</span><span class="alt-label">Altmetric</span></div><a class="btn-link" href="#">Acesso aberto <i data-lucide="arrow-up-right"></i></a></div>
-      </article>
-      <article class="pub reveal" data-pub data-year="2025" data-line="L1" data-type="dissertacao">
-        <div class="pub-main"><div class="pub-tags"><span class="badge teal">L1 · Cibermetria</span><span class="badge">Dissertação</span></div>
-          <h3 class="pub-title">Sociabilidades e mediação da informação em comunidades digitais</h3>
-          <p class="pub-authors">Autoria a confirmar · PPGCI/UFAL · 2025</p><p class="pub-doi">Repositório: a confirmar</p></div>
-        <div class="pub-aside"><div class="altmetric"><span class="alt-score">38</span><span class="alt-label">Altmetric</span></div><a class="btn-link" href="#">Acesso aberto <i data-lucide="arrow-up-right"></i></a></div>
-      </article>
-      <article class="pub reveal" data-pub data-year="2024" data-line="L2" data-type="artigo">
-        <div class="pub-main"><div class="pub-tags"><span class="badge teal">L2 · Altmetria</span><span class="badge">Artigo</span></div>
-          <h3 class="pub-title">Ciência aberta e presença social da pesquisa brasileira no Mendeley</h3>
-          <p class="pub-authors">Autoria a confirmar · Periódico internacional · 2024</p><p class="pub-doi">DOI: 10.0000/exemplo-0002</p></div>
-        <div class="pub-aside"><div class="altmetric high"><span class="alt-score">96</span><span class="alt-label">Altmetric</span></div><a class="btn-link" href="#">Acesso aberto <i data-lucide="arrow-up-right"></i></a></div>
-      </article>
-      <article class="pub reveal" data-pub data-year="2024" data-line="L3" data-type="artigo">
-        <div class="pub-main"><div class="pub-tags"><span class="badge teal">L3 · Soberania</span><span class="badge">Artigo</span></div>
-          <h3 class="pub-title">Geopolíticas da ciência e justiça epistêmica no Sul Global</h3>
-          <p class="pub-authors">Autoria a confirmar · Periódico · 2024</p><p class="pub-doi">DOI: 10.0000/exemplo-0003</p></div>
-        <div class="pub-aside"><div class="altmetric"><span class="alt-score">54</span><span class="alt-label">Altmetric</span></div><a class="btn-link" href="#">Acesso aberto <i data-lucide="arrow-up-right"></i></a></div>
-      </article>
-      <article class="pub reveal" data-pub data-year="2024" data-line="L2" data-type="tese">
-        <div class="pub-main"><div class="pub-tags"><span class="badge teal">L2 · Altmetria</span><span class="badge">Tese</span></div>
-          <h3 class="pub-title">Desinformação científica e debate público da ciência pós-2020</h3>
-          <p class="pub-authors">Autoria a confirmar · PPGCI/UFAL · 2024</p><p class="pub-doi">Repositório: a confirmar</p></div>
-        <div class="pub-aside"><div class="altmetric high"><span class="alt-score">71</span><span class="alt-label">Altmetric</span></div><a class="btn-link" href="#">Acesso aberto <i data-lucide="arrow-up-right"></i></a></div>
-      </article>
-      <article class="pub reveal" data-pub data-year="2023" data-line="L1" data-type="congresso">
-        <div class="pub-main"><div class="pub-tags"><span class="badge teal">L1 · Cibermetria</span><span class="badge">Congresso</span></div>
-          <h3 class="pub-title">Webometria e análise de presença digital da ciência — ENANCIB</h3>
-          <p class="pub-authors">Autoria a confirmar · Anais ENANCIB · 2023</p><p class="pub-doi">DOI: 10.0000/exemplo-0004</p></div>
-        <div class="pub-aside"><div class="altmetric"><span class="alt-score">22</span><span class="alt-label">Altmetric</span></div><a class="btn-link" href="#">Acesso aberto <i data-lucide="arrow-up-right"></i></a></div>
-      </article>
-      <article class="pub reveal" data-pub data-year="2023" data-line="L2" data-type="artigo">
-        <div class="pub-main"><div class="pub-tags"><span class="badge teal">L2 · Altmetria</span><span class="badge">Artigo</span></div>
-          <h3 class="pub-title">Semantometria aplicada à avaliação de impacto não-tradicional</h3>
-          <p class="pub-authors">Autoria a confirmar · Periódico · 2023</p><p class="pub-doi">DOI: 10.0000/exemplo-0005</p></div>
-        <div class="pub-aside"><div class="altmetric"><span class="alt-score">45</span><span class="alt-label">Altmetric</span></div><a class="btn-link" href="#">Acesso aberto <i data-lucide="arrow-up-right"></i></a></div>
-      </article>
-      <article class="pub reveal" data-pub data-year="2023" data-line="L3" data-type="dissertacao">
-        <div class="pub-main"><div class="pub-tags"><span class="badge teal">L3 · Soberania</span><span class="badge">Dissertação</span></div>
-          <h3 class="pub-title">Integridade da pesquisa e soberania científica em periódicos nacionais</h3>
-          <p class="pub-authors">Autoria a confirmar · PPGCI/UFAL · 2023</p><p class="pub-doi">Repositório: a confirmar</p></div>
-        <div class="pub-aside"><div class="altmetric"><span class="alt-score">19</span><span class="alt-label">Altmetric</span></div><a class="btn-link" href="#">Acesso aberto <i data-lucide="arrow-up-right"></i></a></div>
-      </article>
+    <div class="pub-count-bar reveal">
+      <span class="mono"><span id="pub-count">—</span> resultados</span>
     </div>
 
-    <div class="pub-empty reveal">
-      <span class="slot-tag"><i data-lucide="edit-3"></i>Catálogo completo — a preencher</span>
-      <p>Importe os 140+ registros do lab (Lattes, repositório ou planilha). Cada entrada usa ano, linha e tipo para os filtros, mais DOI e Altmetric Score.</p>
+    <div class="pub-list" id="pub-list">
+      <div class="pub-empty">
+        <span class="slot-tag"><i data-lucide="loader"></i>Carregando publicações…</span>
+      </div>
+    </div>
+
+    <div id="pub-erro" style="display:none" class="pub-empty">
+      <span class="slot-tag"><i data-lucide="wifi-off"></i>Sem conexão com a API</span>
+      <p>Verifique se a API está rodando e tente recarregar a página.</p>
     </div>
 
   </div>
@@ -126,9 +141,185 @@
 
 </main>
 
+<!-- Modal de detalhe -->
+<div class="pub-overlay" id="pub-overlay">
+  <div class="pub-modal" id="pub-modal">
+    <button class="pub-modal-close" id="modal-close" aria-label="Fechar">×</button>
+    <div class="pub-modal-tags" id="modal-tags"></div>
+    <h2 class="pub-modal-title" id="modal-titulo"></h2>
+    <p class="pub-modal-authors" id="modal-autores"></p>
+    <div class="pub-modal-meta" id="modal-meta"></div>
+    <div class="pub-modal-divider" id="modal-divider" style="display:none"></div>
+    <div id="modal-resumo-wrap" style="display:none">
+      <p class="pub-modal-resumo-label">Resumo</p>
+      <p class="pub-modal-resumo" id="modal-resumo"></p>
+    </div>
+    <div class="pub-modal-actions" id="modal-actions"></div>
+  </div>
+</div>
+
 <div data-chrome="footer"></div>
 
 <script src="https://unpkg.com/lucide@0.298.0/dist/umd/lucide.min.js"></script>
+<script src="assets/config.js"></script>
 <script src="assets/site.js"></script>
+<script>
+(function () {
+  var TODAS = [];
+  var filtros = { ano: 'all', linha: 'all', tipo: 'all' };
+
+  function capitalizar(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+
+  function renderPub(p) {
+    var autores = Array.isArray(p.autores) ? p.autores.join(', ') : (p.autores || 'Autoria a confirmar');
+    var revInfo = [p.revista, p.volume ? 'v.' + p.volume : '', p.numero ? 'n.' + p.numero : '', p.ano].filter(Boolean).join(' · ');
+    var doiTexto = p.doi ? 'DOI: ' + p.doi : '';
+
+    return '<article class="pub" data-id="' + p.id + '">' +
+      '<div class="pub-main">' +
+        '<div class="pub-tags">' +
+          (p.linha ? '<span class="badge teal">' + p.linha + '</span>' : '') +
+          (p.tipo  ? '<span class="badge">' + capitalizar(p.tipo) + '</span>' : '') +
+        '</div>' +
+        '<h3 class="pub-title">' + p.titulo + '</h3>' +
+        '<p class="pub-authors">' + autores + (revInfo ? ' · ' + revInfo : '') + '</p>' +
+        (doiTexto ? '<p class="pub-doi">' + doiTexto + '</p>' : '') +
+      '</div>' +
+      '<div class="pub-aside">' +
+        '<span class="btn-link">Ver detalhes <i data-lucide="arrow-right"></i></span>' +
+      '</div>' +
+    '</article>';
+  }
+
+  function abrirModal(id) {
+    var p = TODAS.find(function (x) { return x.id === id; });
+    if (!p) return;
+
+    var autores = Array.isArray(p.autores) ? p.autores.join(', ') : (p.autores || 'Autoria a confirmar');
+
+    // Tags
+    var tagsEl = document.getElementById('modal-tags');
+    tagsEl.innerHTML =
+      (p.linha ? '<span class="badge teal">' + p.linha + '</span>' : '') +
+      (p.tipo  ? '<span class="badge">' + capitalizar(p.tipo) + '</span>' : '');
+
+    // Título e autores
+    document.getElementById('modal-titulo').textContent = p.titulo;
+    document.getElementById('modal-autores').textContent = autores;
+
+    // Meta (ano, revista, volume, doi)
+    var meta = [];
+    if (p.ano)     meta.push('<span><i data-lucide="calendar" style="width:13px;height:13px"></i>' + p.ano + '</span>');
+    if (p.revista) meta.push('<span><i data-lucide="book-open" style="width:13px;height:13px"></i>' + p.revista + '</span>');
+    if (p.volume)  meta.push('<span>v.' + p.volume + (p.numero ? ' n.' + p.numero : '') + (p.paginas ? ' p.' + p.paginas : '') + '</span>');
+    if (p.doi)     meta.push('<span><i data-lucide="link-2" style="width:13px;height:13px"></i>' + p.doi + '</span>');
+    document.getElementById('modal-meta').innerHTML = meta.join('');
+
+    // Resumo
+    var resumoWrap = document.getElementById('modal-resumo-wrap');
+    var divider    = document.getElementById('modal-divider');
+    if (p.resumo) {
+      document.getElementById('modal-resumo').textContent = p.resumo;
+      resumoWrap.style.display = '';
+      divider.style.display = '';
+    } else {
+      resumoWrap.style.display = 'none';
+      divider.style.display = 'none';
+    }
+
+    // Botões
+    var actionsEl = document.getElementById('modal-actions');
+    var temLink = !!p.link;
+    actionsEl.innerHTML =
+      '<a class="btn-acesso' + (temLink ? '' : ' btn-disabled') + '"' +
+        (temLink ? ' href="' + p.link + '" target="_blank" rel="noopener"' : '') + '>' +
+        '<i data-lucide="external-link"></i> Acessar publicação' +
+      '</a>' +
+      '<a class="btn-download' + (temLink ? '' : ' btn-disabled') + '"' +
+        (temLink ? ' href="' + p.link + '" download target="_blank" rel="noopener"' : '') + '>' +
+        '<i data-lucide="download"></i> Download' +
+      '</a>';
+
+    document.getElementById('pub-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  function fecharModal() {
+    document.getElementById('pub-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('modal-close').addEventListener('click', fecharModal);
+  document.getElementById('pub-overlay').addEventListener('click', function (e) {
+    if (e.target === this) fecharModal();
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fecharModal(); });
+
+  // Clique nas publicações
+  document.getElementById('pub-list').addEventListener('click', function (e) {
+    var art = e.target.closest('[data-id]');
+    if (art) abrirModal(parseInt(art.getAttribute('data-id')));
+  });
+
+  function aplicarFiltros() {
+    var lista = TODAS.filter(function (p) {
+      return (filtros.ano   === 'all' || String(p.ano) === filtros.ano)  &&
+             (filtros.linha === 'all' || p.linha        === filtros.linha) &&
+             (filtros.tipo  === 'all' || p.tipo         === filtros.tipo);
+    });
+
+    var container = document.getElementById('pub-list');
+    document.getElementById('pub-count').textContent = lista.length;
+
+    if (!lista.length) {
+      container.innerHTML = '<div class="pub-empty"><span class="slot-tag"><i data-lucide="search-x"></i>Nenhum resultado</span><p>Tente outros filtros.</p></div>';
+    } else {
+      container.innerHTML = lista.map(renderPub).join('');
+    }
+
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  function gerarChipsAnos(publicacoes) {
+    var anos = [...new Set(publicacoes.map(function (p) { return p.ano; }).filter(Boolean))].sort(function (a, b) { return b - a; });
+    var chips = document.getElementById('chips-ano');
+    anos.forEach(function (ano) {
+      var btn = document.createElement('button');
+      btn.className = 'chip';
+      btn.setAttribute('data-filtro', 'ano');
+      btn.setAttribute('data-val', String(ano));
+      btn.textContent = ano;
+      chips.appendChild(btn);
+    });
+  }
+
+  // Filtros
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-filtro]');
+    if (!btn) return;
+    var grupo = btn.getAttribute('data-filtro');
+    var val   = btn.getAttribute('data-val');
+    btn.closest('.chips').querySelectorAll('.chip').forEach(function (b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    filtros[grupo] = val;
+    aplicarFiltros();
+  });
+
+  // Buscar da API
+  fetch(API_URL + '/api/publicacoes')
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      TODAS = data.dados || [];
+      gerarChipsAnos(TODAS);
+      aplicarFiltros();
+    })
+    .catch(function () {
+      document.getElementById('pub-list').innerHTML = '';
+      document.getElementById('pub-erro').style.display = '';
+      if (window.lucide) window.lucide.createIcons();
+    });
+})();
+</script>
 </body>
 </html>
