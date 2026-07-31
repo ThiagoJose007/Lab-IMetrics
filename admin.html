@@ -247,19 +247,49 @@
 <script src="assets/config.js"></script>
 <script>
   var token = localStorage.getItem('imetrics_token');
-  if (!token) window.location.href = 'login.html';
+  if (!token) window.location.href = '/login';
 
   var publicacoes = [];
   var editandoId = null;
 
+  // ── Sessão / expiração ──
+  function deslogar(motivo) {
+    localStorage.removeItem('imetrics_token');
+    if (motivo) alert(motivo);
+    window.location.href = '/login';
+  }
+
+  function verificarToken() {
+    if (!token) return deslogar();
+    try {
+      var payload = JSON.parse(atob(token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+      var expiresIn = payload.exp * 1000 - Date.now();
+      if (expiresIn <= 0) return deslogar('Sua sessão expirou. Faça login novamente.');
+      // Avisa 5 min antes de expirar
+      if (expiresIn > 5 * 60 * 1000) {
+        setTimeout(function () {
+          alert('Sua sessão expira em 5 minutos. Salve o que estiver fazendo.');
+        }, expiresIn - 5 * 60 * 1000);
+      }
+      // Desloga automaticamente ao expirar
+      setTimeout(function () { deslogar('Sessão expirada. Faça login novamente.'); }, expiresIn);
+    } catch (e) {
+      deslogar('Token inválido. Faça login novamente.');
+    }
+  }
+  verificarToken();
+
   // ── Auth ──
   document.getElementById('btn-logout').addEventListener('click', function () {
-    localStorage.removeItem('imetrics_token');
-    window.location.href = 'login.html';
+    deslogar();
   });
 
   function authHeaders() {
     return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+  }
+
+  function tratar401() {
+    deslogar('Sessão expirada. Faça login novamente.');
   }
 
   // ── Toast ──
@@ -275,7 +305,7 @@
   async function carregar() {
     try {
       var res = await fetch(API_URL + '/api/publicacoes', { headers: authHeaders() });
-      if (res.status === 401) { window.location.href = 'login.html'; return; }
+      if (res.status === 401) { tratar401(); return; }
       var data = await res.json();
       publicacoes = data.dados || [];
       renderTabela(publicacoes);
@@ -389,7 +419,7 @@
         headers: authHeaders(),
         body: JSON.stringify(body)
       });
-      if (res.status === 401) { window.location.href = 'login.html'; return; }
+      if (res.status === 401) { tratar401(); return; }
       if (!res.ok) throw new Error('Erro ao salvar');
       toast(editandoId ? 'Publicação atualizada!' : 'Publicação criada!', 'ok');
       fecharModal();
@@ -409,7 +439,7 @@
       var res = await fetch(API_URL + '/api/admin/publicacoes/' + id, {
         method: 'DELETE', headers: authHeaders()
       });
-      if (res.status === 401) { window.location.href = 'login.html'; return; }
+      if (res.status === 401) { tratar401(); return; }
       if (!res.ok) throw new Error();
       toast('Publicação removida.', 'ok');
       carregar();
