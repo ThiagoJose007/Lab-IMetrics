@@ -39,26 +39,7 @@
 <section class="section band-light">
   <div class="container">
     <div class="sec-head reveal"><span class="tagline">Coordenação</span><h2 class="h-sec">Fundadores</h2></div>
-    <div class="team-grid cols-2 reveal" style="margin-top:48px;">
-      <article class="person">
-        <div class="person-avatar"><span>RA</span></div>
-        <div class="person-body">
-          <h3 class="h-card">Prof. Dr. Ronaldo Ferreira de Araújo</h3>
-          <p class="person-role">Coordenador · Fundador</p>
-          <p class="person-area">Altmetria · cibermetria · comunicação científica</p>
-          <div class="person-links"><a class="badge teal"><i data-lucide="external-link"></i> Lattes</a><a class="badge teal"><i data-lucide="external-link"></i> ORCID</a></div>
-        </div>
-      </article>
-      <article class="person">
-        <div class="person-avatar"><span>RV</span></div>
-        <div class="person-body">
-          <h3 class="h-card">Profa. Dra. Roberia de Lourdes de Vasconcelos Andrade</h3>
-          <p class="person-role">Coordenadora · Fundadora</p>
-          <p class="person-area">Ciência da informação · estudos métricos</p>
-          <div class="person-links"><a class="badge teal"><i data-lucide="external-link"></i> Lattes</a><a class="badge teal"><i data-lucide="external-link"></i> ORCID</a></div>
-        </div>
-      </article>
-    </div>
+    <div class="team-grid cols-2 reveal" id="coordenadores-grid" style="margin-top:48px;"></div>
   </div>
 </section>
 
@@ -96,9 +77,33 @@
 
 <div data-chrome="footer"></div>
 
+<script src="assets/config.js"></script>
 <script src="https://unpkg.com/lucide@0.298.0/dist/umd/lucide.min.js"></script>
 <script>
   (function () {
+    function iniciais(nome) {
+      return nome.split(' ').filter(function (w) { return w.length > 2; }).slice(0, 2).map(function (w) { return w[0]; }).join('');
+    }
+
+    function esc(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function renderPessoa(m) {
+      var avatar = m.foto_url
+        ? '<div class="person-avatar"><img src="' + esc(m.foto_url) + '" alt="' + esc(m.nome) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" /></div>'
+        : '<div class="person-avatar"><span>' + esc(iniciais(m.nome)) + '</span></div>';
+      var papel = m.papel ? '<p class="person-role">' + esc(m.papel) + (m.nivel ? ' · ' + esc(m.nivel) : '') + '</p>' : '';
+      var area  = m.area  ? '<p class="person-area">' + esc(m.area) + '</p>' : '';
+      var links = '';
+      if (m.lattes_url) links += '<a href="' + esc(m.lattes_url) + '" target="_blank" rel="noopener" class="badge teal"><i data-lucide="external-link"></i> Lattes</a>';
+      if (m.orcid_url)  links += '<a href="' + esc(m.orcid_url)  + '" target="_blank" rel="noopener" class="badge teal"><i data-lucide="external-link"></i> ORCID</a>';
+      return '<article class="person">' + avatar +
+        '<div class="person-body"><h3 class="h-card">' + esc(m.nome) + '</h3>' + papel + area +
+        (links ? '<div class="person-links">' + links + '</div>' : '') +
+        '</div></article>';
+    }
+
     function slot(tag) {
       var d = document.createElement('article');
       d.className = 'person person-slot reveal';
@@ -107,13 +112,43 @@
         '<p class="slot-line"></p><p class="slot-line short"></p></div>';
       return d;
     }
+
     function fill(id, n, tag) {
       var g = document.getElementById(id); if (!g) return;
       for (var i = 1; i <= n; i++) g.appendChild(slot(tag + ' ' + String(i).padStart(2, '0')));
     }
-    fill('doutores-grid', 10, 'Doutor(a)');
-    fill('estudantes-grid', 14, 'Estudante');
-    fill('tecnicos-grid', 2, 'Técnico(a)');
+
+    function renderGrupo(id, lista, slotTag, slotN) {
+      var g = document.getElementById(id); if (!g) return;
+      if (lista.length) {
+        g.innerHTML = lista.map(renderPessoa).join('');
+      } else {
+        fill(id, slotN, slotTag);
+      }
+    }
+
+    fetch(API_URL + '/api/membros')
+      .then(function (r) { return r.json(); })
+      .then(function (todos) {
+        var coord    = todos.filter(function (m) { return m.categoria === 'coordenador'; });
+        var doutores = todos.filter(function (m) { return m.categoria === 'doutor'; });
+        var estudant = todos.filter(function (m) { return m.categoria === 'estudante'; });
+        var tecnicos = todos.filter(function (m) { return m.categoria === 'tecnico'; });
+
+        renderGrupo('coordenadores-grid', coord,    'Coordenador(a)', 2);
+        renderGrupo('doutores-grid',      doutores,  'Doutor(a)',      10);
+        renderGrupo('estudantes-grid',    estudant,  'Estudante',      14);
+        renderGrupo('tecnicos-grid',      tecnicos,  'Técnico(a)',      2);
+
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+      })
+      .catch(function () {
+        fill('coordenadores-grid', 2,  'Coordenador(a)');
+        fill('doutores-grid',      10, 'Doutor(a)');
+        fill('estudantes-grid',    14, 'Estudante');
+        fill('tecnicos-grid',       2, 'Técnico(a)');
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+      });
   })();
 </script>
 <script src="assets/site.js"></script>

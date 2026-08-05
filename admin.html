@@ -30,6 +30,14 @@
   .btn-logout { font-family: var(--sans); font-size: 0.85rem; color: var(--body); background: none; border: 1px solid var(--line); border-radius: 6px; padding: 6px 14px; cursor: pointer; transition: all .2s; }
   .btn-logout:hover { color: var(--white); border-color: rgba(255,255,255,0.3); }
 
+  /* ── Tab nav ── */
+  .topbar-nav { display: flex; gap: 4px; }
+  .tab-btn { font-family: var(--sans); font-size: 0.85rem; color: var(--body); background: none; border: none; border-radius: 6px; padding: 6px 14px; cursor: pointer; transition: all .2s; }
+  .tab-btn:hover { color: var(--white); background: rgba(255,255,255,0.06); }
+  .tab-btn.active { color: var(--amber); background: rgba(243,156,18,0.1); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
   /* ── Layout ── */
   .main { max-width: 1100px; margin: 0 auto; padding: 32px 24px 80px; }
   .page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 16px; }
@@ -65,6 +73,7 @@
   .badge { display: inline-block; font-family: var(--mono); font-size: 0.68rem; padding: 3px 9px; border-radius: 100px; border: 1px solid var(--line); white-space: nowrap; }
   .badge.teal { color: var(--teal); border-color: rgba(26,188,156,0.35); }
   .badge.amber { color: var(--amber); border-color: rgba(243,156,18,0.35); }
+  .badge.red { color: var(--red); border-color: rgba(239,68,68,0.35); }
   .actions { display: flex; gap: 8px; }
   .btn-edit, .btn-del {
     font-size: 0.8rem; font-family: var(--sans); padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all .2s; border: 1px solid;
@@ -119,6 +128,7 @@
     .form-grid .span2 { grid-column: span 1; }
     .topbar { padding: 0 16px; }
     .main { padding: 20px 16px 60px; }
+    .topbar-nav { display: none; }
   }
 </style>
 </head>
@@ -130,43 +140,85 @@
     <div class="sep"></div>
     <span>Painel Admin</span>
   </div>
+  <nav class="topbar-nav">
+    <button class="tab-btn active" data-tab="publicacoes">Publicações</button>
+    <button class="tab-btn" data-tab="equipe">Equipe</button>
+  </nav>
   <button class="btn-logout" id="btn-logout">Sair</button>
 </header>
 
 <main class="main">
-  <div class="page-head">
-    <div>
-      <h1>Publicações</h1>
-      <p class="stats" id="stats">Carregando…</p>
+
+  <!-- ── TAB: PUBLICAÇÕES ── -->
+  <div id="tab-publicacoes" class="tab-content active">
+    <div class="page-head">
+      <div>
+        <h1>Publicações</h1>
+        <p class="stats" id="stats">Carregando…</p>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <input class="search-input" id="busca" type="search" placeholder="Buscar por título…" />
+      <button class="btn-primary" id="btn-nova">+ Nova publicação</button>
+    </div>
+
+    <div class="table-wrap">
+      <table id="tabela">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Título</th>
+            <th>Autores</th>
+            <th>Ano</th>
+            <th>Tipo</th>
+            <th>Linha</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr><td colspan="7"><div class="state-box">Carregando…</div></td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
-  <div class="action-bar">
-    <input class="search-input" id="busca" type="search" placeholder="Buscar por título…" />
-    <button class="btn-primary" id="btn-nova">+ Nova publicação</button>
+  <!-- ── TAB: EQUIPE ── -->
+  <div id="tab-equipe" class="tab-content">
+    <div class="page-head">
+      <div>
+        <h1>Equipe</h1>
+        <p class="stats" id="stats-membro">Carregando…</p>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <input class="search-input" id="busca-membro" type="search" placeholder="Buscar por nome…" />
+      <button class="btn-primary" id="btn-novo-membro">+ Novo membro</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Papel</th>
+            <th>Categoria</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-membro">
+          <tr><td colspan="6"><div class="state-box">Carregando…</div></td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
-  <div class="table-wrap">
-    <table id="tabela">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Título</th>
-          <th>Autores</th>
-          <th>Ano</th>
-          <th>Tipo</th>
-          <th>Linha</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody id="tbody">
-        <tr><td colspan="7"><div class="state-box">Carregando…</div></td></tr>
-      </tbody>
-    </table>
-  </div>
 </main>
 
-<!-- Modal criar/editar -->
+<!-- Modal criar/editar publicação -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <button class="modal-close" id="modal-close">×</button>
@@ -242,6 +294,70 @@
   </div>
 </div>
 
+<!-- Modal criar/editar membro -->
+<div class="overlay" id="overlay-membro">
+  <div class="modal">
+    <button class="modal-close" id="modal-membro-close">×</button>
+    <h2 id="modal-membro-title">Novo membro</h2>
+    <form id="form-membro">
+      <div class="form-grid">
+        <div class="field span2">
+          <label>Nome completo *</label>
+          <input type="text" name="nome" placeholder="Prof. Dr. Ronaldo Ferreira de Araújo" required />
+        </div>
+        <div class="field">
+          <label>Papel / Título</label>
+          <input type="text" name="papel" placeholder="Coordenador · Fundador" />
+        </div>
+        <div class="field">
+          <label>Categoria</label>
+          <select name="categoria">
+            <option value="coordenador">Coordenação</option>
+            <option value="doutor" selected>Doutor(a)</option>
+            <option value="estudante">Estudante</option>
+            <option value="tecnico">Técnico(a)</option>
+          </select>
+        </div>
+        <div class="field span2">
+          <label>Área de atuação</label>
+          <input type="text" name="area" placeholder="Altmetria · cibermetria · comunicação científica" />
+        </div>
+        <div class="field">
+          <label>Nível (para estudantes)</label>
+          <input type="text" name="nivel" placeholder="Doutorado, Mestrado, Graduação" />
+        </div>
+        <div class="field">
+          <label>Status</label>
+          <select name="ativo">
+            <option value="true" selected>Ativo</option>
+            <option value="false">Inativo</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Ordem de exibição</label>
+          <input type="number" name="ordem" placeholder="0" min="0" />
+        </div>
+        <div class="field">
+          <label>URL da foto</label>
+          <input type="url" name="foto_url" placeholder="https://…/foto.jpg" />
+        </div>
+        <div class="field">
+          <label>Lattes URL</label>
+          <input type="url" name="lattes_url" placeholder="http://lattes.cnpq.br/…" />
+        </div>
+        <div class="field">
+          <label>ORCID URL</label>
+          <input type="url" name="orcid_url" placeholder="https://orcid.org/…" />
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" id="btn-cancel-membro">Cancelar</button>
+        <button type="submit" class="btn-save" id="btn-save-membro">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="assets/config.js"></script>
@@ -251,6 +367,8 @@
 
   var publicacoes = [];
   var editandoId = null;
+  var membros = [];
+  var editandoMembroId = null;
 
   // ── Sessão / expiração ──
   function deslogar(motivo) {
@@ -265,13 +383,11 @@
       var payload = JSON.parse(atob(token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
       var expiresIn = payload.exp * 1000 - Date.now();
       if (expiresIn <= 0) return deslogar('Sua sessão expirou. Faça login novamente.');
-      // Avisa 5 min antes de expirar
       if (expiresIn > 5 * 60 * 1000) {
         setTimeout(function () {
           alert('Sua sessão expira em 5 minutos. Salve o que estiver fazendo.');
         }, expiresIn - 5 * 60 * 1000);
       }
-      // Desloga automaticamente ao expirar
       setTimeout(function () { deslogar('Sessão expirada. Faça login novamente.'); }, expiresIn);
     } catch (e) {
       deslogar('Token inválido. Faça login novamente.');
@@ -301,6 +417,19 @@
     el._t = setTimeout(function () { el.classList.remove('show'); }, 3000);
   }
 
+  function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  // ── Tabs ──
+  document.querySelectorAll('.tab-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+      document.querySelectorAll('.tab-content').forEach(function (c) { c.classList.remove('active'); });
+      this.classList.add('active');
+      document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+      if (this.dataset.tab === 'equipe') carregarMembros();
+    });
+  });
+
   // ── Carregar publicações ──
   async function carregar() {
     try {
@@ -315,7 +444,7 @@
     }
   }
 
-  // ── Renderizar tabela ──
+  // ── Renderizar tabela publicações ──
   function renderTabela(lista) {
     var tbody = document.getElementById('tbody');
     if (!lista.length) {
@@ -340,15 +469,13 @@
     }).join('');
   }
 
-  function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-  // ── Busca local ──
+  // ── Busca publicações ──
   document.getElementById('busca').addEventListener('input', function () {
     var q = this.value.toLowerCase();
     renderTabela(q ? publicacoes.filter(function (p) { return p.titulo.toLowerCase().includes(q); }) : publicacoes);
   });
 
-  // ── Modal ──
+  // ── Modal publicações ──
   function abrirModal(titulo) {
     editandoId = null;
     document.getElementById('modal-title').textContent = titulo;
@@ -386,7 +513,7 @@
     document.getElementById('overlay').classList.add('open');
   }
 
-  // ── Salvar (criar ou editar) ──
+  // ── Salvar publicação ──
   document.getElementById('form-pub').addEventListener('submit', async function (e) {
     e.preventDefault();
     var btn = document.getElementById('btn-save');
@@ -432,7 +559,7 @@
     }
   });
 
-  // ── Excluir ──
+  // ── Excluir publicação ──
   async function excluir(id, titulo) {
     if (!confirm('Excluir "' + titulo + '"?\nEsta ação não pode ser desfeita.')) return;
     try {
@@ -443,6 +570,146 @@
       if (!res.ok) throw new Error();
       toast('Publicação removida.', 'ok');
       carregar();
+    } catch {
+      toast('Erro ao excluir.', 'err');
+    }
+  }
+
+  // ── Carregar membros ──
+  async function carregarMembros() {
+    try {
+      var res = await fetch(API_URL + '/api/admin/membros', { headers: authHeaders() });
+      if (res.status === 401) { tratar401(); return; }
+      membros = await res.json();
+      renderTabelaMembros(membros);
+      document.getElementById('stats-membro').innerHTML = 'Total: <b>' + membros.length + '</b> membros';
+    } catch (e) {
+      document.getElementById('tbody-membro').innerHTML = '<tr><td colspan="6"><div class="state-box"><b>Erro de conexão</b>Verifique se a API está rodando em ' + API_URL + '</div></td></tr>';
+    }
+  }
+
+  // ── Renderizar tabela membros ──
+  var catLabel = { coordenador: 'Coordenação', doutor: 'Doutor', estudante: 'Estudante', tecnico: 'Técnico' };
+
+  function renderTabelaMembros(lista) {
+    var tbody = document.getElementById('tbody-membro');
+    if (!lista.length) {
+      tbody.innerHTML = '<tr><td colspan="6"><div class="state-box"><b>Nenhum membro encontrado</b>Clique em "+ Novo membro" para começar.</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = lista.map(function (m) {
+      var cat = catLabel[m.categoria] || m.categoria;
+      var catClass = m.categoria === 'coordenador' ? ' amber' : m.categoria === 'doutor' ? ' teal' : '';
+      var ativo = m.ativo ? '<span class="badge teal">Ativo</span>' : '<span class="badge red">Inativo</span>';
+      return '<tr>' +
+        '<td><span class="badge">' + m.id + '</span></td>' +
+        '<td class="td-title"><div class="td-title-text">' + esc(m.nome) + '</div></td>' +
+        '<td>' + esc(m.papel || '—') + '</td>' +
+        '<td><span class="badge' + catClass + '">' + esc(cat) + '</span></td>' +
+        '<td>' + ativo + '</td>' +
+        '<td><div class="actions">' +
+          '<button class="btn-edit" onclick="abrirEditarMembro(' + m.id + ')">Editar</button>' +
+          '<button class="btn-del" onclick="excluirMembro(' + m.id + ', \'' + esc(m.nome).replace(/'/g, "\\'") + '\')">Excluir</button>' +
+        '</div></td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  // ── Busca membros ──
+  document.getElementById('busca-membro').addEventListener('input', function () {
+    var q = this.value.toLowerCase();
+    renderTabelaMembros(q ? membros.filter(function (m) { return m.nome.toLowerCase().includes(q); }) : membros);
+  });
+
+  // ── Modal membros ──
+  function fecharModalMembro() {
+    document.getElementById('overlay-membro').classList.remove('open');
+    document.getElementById('form-membro').reset();
+    editandoMembroId = null;
+  }
+
+  document.getElementById('btn-novo-membro').addEventListener('click', function () {
+    editandoMembroId = null;
+    document.getElementById('modal-membro-title').textContent = 'Novo membro';
+    document.getElementById('overlay-membro').classList.add('open');
+  });
+  document.getElementById('modal-membro-close').addEventListener('click', fecharModalMembro);
+  document.getElementById('btn-cancel-membro').addEventListener('click', fecharModalMembro);
+  document.getElementById('overlay-membro').addEventListener('click', function (e) { if (e.target === this) fecharModalMembro(); });
+
+  function abrirEditarMembro(id) {
+    var m = membros.find(function (x) { return x.id === id; });
+    if (!m) return;
+    editandoMembroId = id;
+    document.getElementById('modal-membro-title').textContent = 'Editar membro';
+    var form = document.getElementById('form-membro');
+    form.nome.value = m.nome || '';
+    form.papel.value = m.papel || '';
+    form.area.value = m.area || '';
+    form.categoria.value = m.categoria || 'doutor';
+    form.nivel.value = m.nivel || '';
+    form.foto_url.value = m.foto_url || '';
+    form.lattes_url.value = m.lattes_url || '';
+    form.orcid_url.value = m.orcid_url || '';
+    form.ativo.value = m.ativo ? 'true' : 'false';
+    form.ordem.value = m.ordem || 0;
+    document.getElementById('overlay-membro').classList.add('open');
+  }
+
+  // ── Salvar membro ──
+  document.getElementById('form-membro').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var btn = document.getElementById('btn-save-membro');
+    btn.disabled = true;
+    btn.textContent = 'Salvando…';
+
+    var form = e.target;
+    var body = {
+      nome:       form.nome.value,
+      papel:      form.papel.value || null,
+      area:       form.area.value || null,
+      categoria:  form.categoria.value || 'doutor',
+      nivel:      form.nivel.value || null,
+      foto_url:   form.foto_url.value || null,
+      lattes_url: form.lattes_url.value || null,
+      orcid_url:  form.orcid_url.value || null,
+      ativo:      form.ativo.value === 'true',
+      ordem:      form.ordem.value ? parseInt(form.ordem.value) : 0,
+    };
+
+    try {
+      var url = editandoMembroId
+        ? API_URL + '/api/admin/membros/' + editandoMembroId
+        : API_URL + '/api/admin/membros';
+      var res = await fetch(url, {
+        method: editandoMembroId ? 'PUT' : 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify(body)
+      });
+      if (res.status === 401) { tratar401(); return; }
+      if (!res.ok) throw new Error('Erro ao salvar');
+      toast(editandoMembroId ? 'Membro atualizado!' : 'Membro criado!', 'ok');
+      fecharModalMembro();
+      carregarMembros();
+    } catch (err) {
+      toast('Erro ao salvar. Tente novamente.', 'err');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Salvar';
+    }
+  });
+
+  // ── Excluir membro ──
+  async function excluirMembro(id, nome) {
+    if (!confirm('Excluir "' + nome + '"?\nEsta ação não pode ser desfeita.')) return;
+    try {
+      var res = await fetch(API_URL + '/api/admin/membros/' + id, {
+        method: 'DELETE', headers: authHeaders()
+      });
+      if (res.status === 401) { tratar401(); return; }
+      if (!res.ok) throw new Error();
+      toast('Membro removido.', 'ok');
+      carregarMembros();
     } catch {
       toast('Erro ao excluir.', 'err');
     }

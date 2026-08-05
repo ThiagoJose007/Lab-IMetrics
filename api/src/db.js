@@ -29,6 +29,22 @@ async function initDB() {
       atualizado_em TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
   `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS membros (
+      id          SERIAL PRIMARY KEY,
+      nome        TEXT NOT NULL,
+      papel       TEXT,
+      area        TEXT,
+      categoria   TEXT NOT NULL DEFAULT 'doutor',
+      nivel       TEXT,
+      foto_url    TEXT,
+      lattes_url  TEXT,
+      orcid_url   TEXT,
+      ativo       BOOLEAN NOT NULL DEFAULT TRUE,
+      ordem       INTEGER NOT NULL DEFAULT 0,
+      criado_em   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `);
   console.log('Banco de dados pronto.');
 }
 

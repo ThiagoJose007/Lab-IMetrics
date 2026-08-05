@@ -23,6 +23,7 @@ app.use(rateLimit({
 }));
 
 app.use('/api/publicacoes', require('./routes/publicacoes'));
+app.use('/api/membros',     require('./routes/membros'));
 app.use('/api/auth',        require('./routes/auth'));
 app.use('/api/admin',       require('./routes/admin'));
 
