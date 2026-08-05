@@ -82,16 +82,6 @@
     }
     return '' +
     '<footer class="site-footer"><div class="container">' +
-      '<div class="foot-news">' +
-        '<div><h3>Receba novidades</h3><p class="sub">Acompanhe pesquisas e publicações do Lab-iMetrics</p></div>' +
-        '<form class="foot-form" id="news-form" novalidate>' +
-          '<div class="row"><input type="email" placeholder="Seu email" aria-label="Seu email" required />' +
-          '<button type="submit" class="btn btn-secondary">Inscrever</button></div>' +
-          '<p class="fine">Ao se inscrever, você concorda com nossa <a href="#">Política de Privacidade</a>.</p>' +
-          '<p class="fine" data-ok hidden>Inscrição registrada — obrigado!</p>' +
-        '</form>' +
-      '</div>' +
-      '<hr class="foot-divider" />' +
       '<div class="foot-links">' +
         col('Navegação', [['Sobre','sobre.html'],['Pesquisas','em-construcao.html'],['Equipe','em-construcao.html'],['Publicações','em-construcao.html']]) +
         col('Linhas ativas', [['Metodologia','sobre.html#linhas'],['Projetos','em-construcao.html'],['Estudos','sobre.html#linhas']]) +
