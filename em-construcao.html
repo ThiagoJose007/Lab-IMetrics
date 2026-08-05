@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Em construção — Lab-iMetrics</title>
+<meta name="description" content="Esta página está sendo preparada. Em breve novidades do Lab-iMetrics." />
+<meta name="robots" content="noindex" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;700&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/home.css" />
+<link rel="stylesheet" href="assets/pages.css" />
+<style>
+  .wip-section {
+    min-height: calc(100vh - 140px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 80px 24px;
+  }
+  .wip-inner {
+    max-width: 520px; text-align: center;
+  }
+  .wip-icon {
+    width: 72px; height: 72px; margin: 0 auto 32px;
+    background: rgba(243,156,18,0.1); border: 1px solid rgba(243,156,18,0.25);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    color: var(--amber);
+  }
+  .wip-icon svg { width: 32px; height: 32px; }
+  .wip-tag {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--amber); margin-bottom: 16px;
+    display: block;
+  }
+  .wip-title {
+    font-family: var(--serif, 'Spectral', serif); font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700; color: var(--white); line-height: 1.2; margin-bottom: 20px;
+  }
+  .wip-desc {
+    font-size: 1.05rem; color: var(--body); line-height: 1.7; margin-bottom: 40px;
+  }
+  .wip-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-outline {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--sans); font-size: 0.95rem; font-weight: 500;
+    color: var(--body); border: 1px solid var(--line); border-radius: 8px;
+    padding: 12px 24px; text-decoration: none; transition: all .2s;
+  }
+  .btn-outline:hover { color: var(--white); border-color: rgba(255,255,255,0.3); }
+</style>
+</head>
+<body data-page="em-construcao">
+
+<div data-chrome="header"></div>
+
+<main>
+  <section class="wip-section">
+    <div class="wip-inner reveal">
+      <div class="wip-icon">
+        <i data-lucide="hard-hat"></i>
+      </div>
+      <span class="wip-tag">Em construção</span>
+      <h1 class="wip-title">Quase lá.</h1>
+      <p class="wip-desc">
+        Esta seção está sendo preparada com cuidado.<br />
+        Em breve estará disponível com todo o conteúdo do Lab-iMetrics.
+      </p>
+      <div class="wip-actions">
+        <a href="index.html" class="btn btn-primary">Voltar ao início</a>
+        <a href="sobre.html" class="btn-outline"><i data-lucide="info"></i> Sobre o lab</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div data-chrome="footer"></div>
+
+<script src="https://unpkg.com/lucide@0.298.0/dist/umd/lucide.min.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>
