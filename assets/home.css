@@ -203,8 +203,9 @@ ul { list-style: none; }
 .hero-slider { position: relative; background: var(--surface); overflow: hidden; }
 .slider-track { display: flex; height: 100%; transition: transform .6s cubic-bezier(.4,0,.2,1); }
 .slide { position: relative; flex: 0 0 100%; display: flex; flex-direction: column; }
-.slide-img { flex: 1 1 auto; min-height: 420px; background: var(--surface-2); position: relative; }
+.slide-img { flex: 1 1 auto; min-height: 420px; background: var(--surface-2); position: relative; overflow: hidden; }
 .slide-img img { width: 100%; height: 100%; object-fit: cover; display: block; position: absolute; inset: 0; }
+.slide-img--full img { object-fit: contain; }
 .slide-caption { padding: 32px 32px 96px; }
 .slide-caption .h-lbl { color: var(--white); }
 .slide-caption p { margin-top: 4px; font-size: 18px; color: var(--body); }
