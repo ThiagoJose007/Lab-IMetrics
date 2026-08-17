@@ -7,6 +7,14 @@ const { initDB } = require('./db');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Railway (e qualquer proxy reverso) adiciona X-Forwarded-For;
+// sem isso o rate limiter vê todos os IPs como o mesmo IP interno.
+app.set('trust proxy', 1);
+
+if (!process.env.ALLOWED_ORIGINS) {
+  console.warn('⚠️  ALLOWED_ORIGINS não configurado — CORS aberto para qualquer origem');
+}
+
 app.use(cors({
   origin: process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',')
