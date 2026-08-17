@@ -22,6 +22,7 @@
             lk('sobre.html', 'Sobre', 'sobre') +
             lk('em-construcao.html', 'Pesquisas', 'publicacoes') +
             lk('em-construcao.html', 'Equipe', 'equipe') +
+            lk('imprensa.html', 'Imprensa', 'imprensa') +
             '<a href="https://tweetscovid-production.up.railway.app/" target="_blank" rel="noopener">Dashboard</a>' +
             '<button class="nav-more" data-menu-more aria-label="Mais">Mais <i data-lucide="chevron-down"></i></button>' +
           '</nav>' +
@@ -49,6 +50,7 @@
           megaItem('sobre.html#linhas', 'line-chart', 'Linha de pesquisa', 'Investigação do impacto científico na web') +
           megaItem('em-construcao.html', 'book-open', 'Publicações', 'Artigos em periódicos nacionais e internacionais') +
           megaItem('em-construcao.html', 'users', 'Equipe', 'Pesquisadores doutores e colaboradores') +
+          megaItem('imprensa.html', 'newspaper', 'Imprensa', 'Matérias, entrevistas e aparições na mídia') +
           megaItem('sobre.html', 'info', 'Sobre', 'História e missão do laboratório') +
         '</div>' +
         '<div class="mega-col"><h4>Recursos</h4>' +

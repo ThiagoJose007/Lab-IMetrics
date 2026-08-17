@@ -121,4 +121,67 @@ router.delete('/membros/:id', async (req, res) => {
   }
 });
 
+// ── IMPRENSA ──
+
+// GET /api/admin/imprensa — todos (incluindo inativos)
+router.get('/imprensa', async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT * FROM imprensa ORDER BY destaque DESC, data_publicacao DESC NULLS LAST, criado_em DESC`
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao buscar imprensa' });
+  }
+});
+
+// POST /api/admin/imprensa
+router.post('/imprensa', async (req, res) => {
+  const { titulo, veiculo, tipo, data_publicacao, url, descricao, imagem_url, destaque, ativo } = req.body;
+  if (!titulo) return res.status(400).json({ erro: 'Título obrigatório' });
+  try {
+    const { rows } = await pool.query(
+      `INSERT INTO imprensa (titulo, veiculo, tipo, data_publicacao, url, descricao, imagem_url, destaque, ativo)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
+      [titulo, veiculo, tipo || 'materia', data_publicacao || null, url, descricao, imagem_url, destaque === true, ativo !== false]
+    );
+    res.status(201).json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao cadastrar item' });
+  }
+});
+
+// PUT /api/admin/imprensa/:id
+router.put('/imprensa/:id', async (req, res) => {
+  const { titulo, veiculo, tipo, data_publicacao, url, descricao, imagem_url, destaque, ativo } = req.body;
+  if (!titulo) return res.status(400).json({ erro: 'Título obrigatório' });
+  try {
+    const { rows } = await pool.query(
+      `UPDATE imprensa SET titulo=$1, veiculo=$2, tipo=$3, data_publicacao=$4, url=$5,
+        descricao=$6, imagem_url=$7, destaque=$8, ativo=$9
+       WHERE id=$10 RETURNING *`,
+      [titulo, veiculo, tipo || 'materia', data_publicacao || null, url, descricao, imagem_url, destaque === true, ativo !== false, req.params.id]
+    );
+    if (!rows.length) return res.status(404).json({ erro: 'Item não encontrado' });
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao atualizar item' });
+  }
+});
+
+// DELETE /api/admin/imprensa/:id
+router.delete('/imprensa/:id', async (req, res) => {
+  try {
+    const { rowCount } = await pool.query('DELETE FROM imprensa WHERE id = $1', [req.params.id]);
+    if (!rowCount) return res.status(404).json({ erro: 'Item não encontrado' });
+    res.json({ mensagem: 'Item removido com sucesso' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao remover item' });
+  }
+});
+
 module.exports = router;

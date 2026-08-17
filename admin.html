@@ -143,6 +143,7 @@
   <nav class="topbar-nav">
     <button class="tab-btn active" data-tab="publicacoes">Publicações</button>
     <button class="tab-btn" data-tab="equipe">Equipe</button>
+    <button class="tab-btn" data-tab="imprensa">Imprensa</button>
   </nav>
   <button class="btn-logout" id="btn-logout">Sair</button>
 </header>
@@ -211,6 +212,42 @@
         </thead>
         <tbody id="tbody-membro">
           <tr><td colspan="6"><div class="state-box">Carregando…</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <!-- ── TAB: IMPRENSA ── -->
+  <div id="tab-imprensa" class="tab-content">
+    <div class="page-head">
+      <div>
+        <h1>Imprensa</h1>
+        <p class="stats" id="stats-imprensa">Carregando…</p>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <input class="search-input" id="busca-imprensa" type="search" placeholder="Buscar por título…" />
+      <button class="btn-primary" id="btn-novo-imprensa">+ Novo item</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Título</th>
+            <th>Veículo</th>
+            <th>Tipo</th>
+            <th>Data</th>
+            <th>Destaque</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-imprensa">
+          <tr><td colspan="8"><div class="state-box">Carregando…</div></td></tr>
         </tbody>
       </table>
     </div>
@@ -358,6 +395,70 @@
   </div>
 </div>
 
+<!-- Modal criar/editar item de imprensa -->
+<div class="overlay" id="overlay-imprensa">
+  <div class="modal">
+    <button class="modal-close" id="modal-imprensa-close">×</button>
+    <h2 id="modal-imprensa-title">Novo item de imprensa</h2>
+    <form id="form-imprensa">
+      <div class="form-grid">
+        <div class="field span2">
+          <label>Título *</label>
+          <input type="text" name="titulo" placeholder="Título da matéria ou entrevista" required />
+        </div>
+        <div class="field">
+          <label>Veículo / Publicação</label>
+          <input type="text" name="veiculo" placeholder="G1, Folha, CNN Brasil…" />
+        </div>
+        <div class="field">
+          <label>Tipo</label>
+          <select name="tipo">
+            <option value="materia">Matéria</option>
+            <option value="entrevista">Entrevista</option>
+            <option value="post">Post</option>
+            <option value="podcast">Podcast</option>
+            <option value="video">Vídeo</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Data de publicação</label>
+          <input type="date" name="data_publicacao" />
+        </div>
+        <div class="field">
+          <label>Destaque</label>
+          <select name="destaque">
+            <option value="false">Não</option>
+            <option value="true">Sim</option>
+          </select>
+        </div>
+        <div class="field span2">
+          <label>URL do conteúdo</label>
+          <input type="url" name="url" placeholder="https://…" />
+        </div>
+        <div class="field span2">
+          <label>URL da imagem (thumbnail)</label>
+          <input type="url" name="imagem_url" placeholder="https://…/imagem.jpg" />
+        </div>
+        <div class="field span2">
+          <label>Descrição</label>
+          <textarea name="descricao" placeholder="Breve descrição ou trecho da matéria…"></textarea>
+        </div>
+        <div class="field">
+          <label>Status</label>
+          <select name="ativo">
+            <option value="true" selected>Ativo</option>
+            <option value="false">Inativo</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" id="btn-cancel-imprensa">Cancelar</button>
+        <button type="submit" class="btn-save" id="btn-save-imprensa">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="assets/config.js"></script>
@@ -427,6 +528,7 @@
       this.classList.add('active');
       document.getElementById('tab-' + this.dataset.tab).classList.add('active');
       if (this.dataset.tab === 'equipe') carregarMembros();
+      if (this.dataset.tab === 'imprensa') carregarImprensa();
     });
   });
 
@@ -713,6 +815,132 @@
     } catch {
       toast('Erro ao excluir.', 'err');
     }
+  }
+
+  // ── Imprensa: dados ──
+  var itensImprensa = [];
+  var editandoImprensaId = null;
+
+  var tipoLabel = { materia: 'Matéria', entrevista: 'Entrevista', post: 'Post', podcast: 'Podcast', video: 'Vídeo' };
+
+  // ── Carregar imprensa ──
+  async function carregarImprensa() {
+    try {
+      var res = await fetch(API_URL + '/api/admin/imprensa', { headers: authHeaders() });
+      if (res.status === 401) { tratar401(); return; }
+      itensImprensa = await res.json();
+      renderTabelaImprensa(itensImprensa);
+      document.getElementById('stats-imprensa').innerHTML = 'Total: <b>' + itensImprensa.length + '</b> itens';
+    } catch (e) {
+      document.getElementById('tbody-imprensa').innerHTML = '<tr><td colspan="8"><div class="state-box"><b>Erro de conexão</b>Verifique se a API está rodando.</div></td></tr>';
+    }
+  }
+
+  function renderTabelaImprensa(lista) {
+    var tbody = document.getElementById('tbody-imprensa');
+    if (!lista.length) {
+      tbody.innerHTML = '<tr><td colspan="8"><div class="state-box"><b>Nenhum item encontrado</b>Clique em "+ Novo item" para começar.</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = lista.map(function (it) {
+      var tipo = tipoLabel[it.tipo] || it.tipo;
+      var data = it.data_publicacao ? new Date(it.data_publicacao).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : '—';
+      var destaque = it.destaque ? '<span class="badge amber">Sim</span>' : '<span class="badge">Não</span>';
+      var status = it.ativo ? '<span class="badge teal">Ativo</span>' : '<span class="badge red">Inativo</span>';
+      return '<tr>' +
+        '<td><span class="badge">' + it.id + '</span></td>' +
+        '<td class="td-title"><div class="td-title-text">' + esc(it.titulo) + '</div></td>' +
+        '<td>' + esc(it.veiculo || '—') + '</td>' +
+        '<td><span class="badge">' + esc(tipo) + '</span></td>' +
+        '<td>' + data + '</td>' +
+        '<td>' + destaque + '</td>' +
+        '<td>' + status + '</td>' +
+        '<td><div class="actions">' +
+          '<button class="btn-edit" onclick="abrirEditarImprensa(' + it.id + ')">Editar</button>' +
+          '<button class="btn-del" onclick="excluirImprensa(' + it.id + ', \'' + esc(it.titulo).replace(/'/g, "\\'") + '\')">Excluir</button>' +
+        '</div></td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  document.getElementById('busca-imprensa').addEventListener('input', function () {
+    var q = this.value.toLowerCase();
+    renderTabelaImprensa(q ? itensImprensa.filter(function (it) { return it.titulo.toLowerCase().includes(q); }) : itensImprensa);
+  });
+
+  // ── Modal imprensa ──
+  function fecharModalImprensa() {
+    document.getElementById('overlay-imprensa').classList.remove('open');
+    document.getElementById('form-imprensa').reset();
+    editandoImprensaId = null;
+  }
+
+  document.getElementById('btn-novo-imprensa').addEventListener('click', function () {
+    editandoImprensaId = null;
+    document.getElementById('modal-imprensa-title').textContent = 'Novo item de imprensa';
+    document.getElementById('overlay-imprensa').classList.add('open');
+  });
+  document.getElementById('modal-imprensa-close').addEventListener('click', fecharModalImprensa);
+  document.getElementById('btn-cancel-imprensa').addEventListener('click', fecharModalImprensa);
+  document.getElementById('overlay-imprensa').addEventListener('click', function (e) { if (e.target === this) fecharModalImprensa(); });
+
+  function abrirEditarImprensa(id) {
+    var it = itensImprensa.find(function (x) { return x.id === id; });
+    if (!it) return;
+    editandoImprensaId = id;
+    document.getElementById('modal-imprensa-title').textContent = 'Editar item de imprensa';
+    var form = document.getElementById('form-imprensa');
+    form.titulo.value = it.titulo || '';
+    form.veiculo.value = it.veiculo || '';
+    form.tipo.value = it.tipo || 'materia';
+    form.data_publicacao.value = it.data_publicacao ? it.data_publicacao.slice(0, 10) : '';
+    form.url.value = it.url || '';
+    form.imagem_url.value = it.imagem_url || '';
+    form.descricao.value = it.descricao || '';
+    form.destaque.value = it.destaque ? 'true' : 'false';
+    form.ativo.value = it.ativo ? 'true' : 'false';
+    document.getElementById('overlay-imprensa').classList.add('open');
+  }
+
+  document.getElementById('form-imprensa').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var btn = document.getElementById('btn-save-imprensa');
+    btn.disabled = true; btn.textContent = 'Salvando…';
+    var form = e.target;
+    var body = {
+      titulo:          form.titulo.value,
+      veiculo:         form.veiculo.value || null,
+      tipo:            form.tipo.value || 'materia',
+      data_publicacao: form.data_publicacao.value || null,
+      url:             form.url.value || null,
+      imagem_url:      form.imagem_url.value || null,
+      descricao:       form.descricao.value || null,
+      destaque:        form.destaque.value === 'true',
+      ativo:           form.ativo.value === 'true',
+    };
+    try {
+      var url = editandoImprensaId
+        ? API_URL + '/api/admin/imprensa/' + editandoImprensaId
+        : API_URL + '/api/admin/imprensa';
+      var res = await fetch(url, { method: editandoImprensaId ? 'PUT' : 'POST', headers: authHeaders(), body: JSON.stringify(body) });
+      if (res.status === 401) { tratar401(); return; }
+      if (!res.ok) throw new Error();
+      toast(editandoImprensaId ? 'Item atualizado!' : 'Item criado!', 'ok');
+      fecharModalImprensa();
+      carregarImprensa();
+    } catch { toast('Erro ao salvar. Tente novamente.', 'err'); }
+    finally { btn.disabled = false; btn.textContent = 'Salvar'; }
+  });
+
+  async function excluirImprensa(id, titulo) {
+    if (!confirm('Excluir "' + titulo + '"?\nEsta ação não pode ser desfeita.')) return;
+    try {
+      var res = await fetch(API_URL + '/api/admin/imprensa/' + id, { method: 'DELETE', headers: authHeaders() });
+      if (res.status === 401) { tratar401(); return; }
+      if (!res.ok) throw new Error();
+      toast('Item removido.', 'ok');
+      carregarImprensa();
+    } catch { toast('Erro ao excluir.', 'err'); }
   }
 
   carregar();

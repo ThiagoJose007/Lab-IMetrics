@@ -45,6 +45,21 @@ async function initDB() {
       criado_em   TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
   `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS imprensa (
+      id               SERIAL PRIMARY KEY,
+      titulo           TEXT NOT NULL,
+      veiculo          TEXT,
+      tipo             TEXT NOT NULL DEFAULT 'materia',
+      data_publicacao  DATE,
+      url              TEXT,
+      descricao        TEXT,
+      imagem_url       TEXT,
+      destaque         BOOLEAN NOT NULL DEFAULT FALSE,
+      ativo            BOOLEAN NOT NULL DEFAULT TRUE,
+      criado_em        TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `);
   console.log('Banco de dados pronto.');
 }
 

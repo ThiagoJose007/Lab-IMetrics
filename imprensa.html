@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Imprensa — Lab-iMetrics</title>
+<meta name="description" content="Matérias, entrevistas e aparições do Lab-iMetrics na mídia." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;700&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/home.css" />
+<link rel="stylesheet" href="assets/pages.css" />
+<style>
+  /* ── Filtros ── */
+  .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin: 40px 0 32px; }
+  .filter-btn {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 7px 16px; border-radius: 100px; border: 1px solid var(--line);
+    background: none; color: var(--body); cursor: pointer; transition: all .2s;
+  }
+  .filter-btn:hover { color: var(--white); border-color: rgba(255,255,255,0.3); }
+  .filter-btn.active { background: var(--teal); border-color: var(--teal); color: #fff; }
+
+  /* ── Grid ── */
+  .press-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+  }
+
+  /* ── Card ── */
+  .press-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    overflow: hidden; display: flex; flex-direction: column;
+    transition: border-color .2s, transform .2s;
+  }
+  .press-card:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
+  .press-card.destaque { border-color: rgba(243,156,18,0.4); }
+
+  .press-thumb {
+    width: 100%; aspect-ratio: 16/9; background: var(--surface-2);
+    overflow: hidden; position: relative;
+  }
+  .press-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .press-thumb-ph {
+    width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 1.8rem; font-weight: 700;
+    color: var(--body-dim); letter-spacing: 0.05em;
+  }
+
+  .press-body { padding: 20px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .press-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .press-badge {
+    font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 100px; border: 1px solid;
+  }
+  .press-badge-tipo { color: var(--teal); border-color: rgba(26,188,156,0.35); }
+  .press-badge-dest { color: var(--amber); border-color: rgba(243,156,18,0.35); }
+  .press-veiculo { font-family: var(--mono); font-size: 0.72rem; color: var(--body-dim); }
+  .press-data { font-family: var(--mono); font-size: 0.72rem; color: var(--body-dim); margin-left: auto; }
+
+  .press-titulo {
+    font-size: 1rem; font-weight: 700; color: var(--white); line-height: 1.4;
+  }
+  .press-titulo a { color: inherit; text-decoration: none; }
+  .press-titulo a:hover { color: var(--teal); }
+
+  .press-desc { font-size: 0.88rem; color: var(--body); line-height: 1.6; flex: 1; }
+
+  .press-link {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--teal); text-decoration: none; transition: opacity .2s;
+  }
+  .press-link:hover { opacity: 0.75; }
+
+  /* ── Empty / loading ── */
+  .press-empty {
+    grid-column: 1 / -1; padding: 80px 24px; text-align: center;
+    color: var(--body-dim); font-size: 0.95rem;
+  }
+  .press-empty b { display: block; font-size: 1.1rem; color: var(--body); margin-bottom: 8px; }
+
+  @media (max-width: 640px) {
+    .press-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body data-page="imprensa">
+
+<div data-chrome="header"></div>
+
+<main>
+
+<section class="page-hero">
+  <div class="container">
+    <div class="inner">
+      <span class="tagline reveal">Imprensa</span>
+      <h1 class="h-hero reveal" data-d="1">Lab-iMetrics na mídia.</h1>
+      <p class="lead reveal" data-d="2">Matérias, entrevistas, posts e aparições do laboratório em veículos de comunicação.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="hairline" />
+
+<section class="section">
+  <div class="container">
+
+    <div class="filter-bar" id="filter-bar">
+      <button class="filter-btn active" data-tipo="todos">Todos</button>
+      <button class="filter-btn" data-tipo="materia">Matéria</button>
+      <button class="filter-btn" data-tipo="entrevista">Entrevista</button>
+      <button class="filter-btn" data-tipo="post">Post</button>
+      <button class="filter-btn" data-tipo="podcast">Podcast</button>
+      <button class="filter-btn" data-tipo="video">Vídeo</button>
+    </div>
+
+    <div class="press-grid" id="press-grid">
+      <div class="press-empty"><b>Carregando…</b></div>
+    </div>
+
+  </div>
+</section>
+
+</main>
+
+<div data-chrome="footer"></div>
+
+<script src="assets/config.js"></script>
+<script src="https://unpkg.com/lucide@0.298.0/dist/umd/lucide.min.js"></script>
+<script>
+  var todosItens = [];
+  var tipoAtivo = 'todos';
+
+  var tipoLabel = { materia: 'Matéria', entrevista: 'Entrevista', post: 'Post', podcast: 'Podcast', video: 'Vídeo' };
+
+  function esc(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function formatarData(d) {
+    if (!d) return '';
+    return new Date(d).toLocaleDateString('pt-BR', { timeZone: 'UTC', day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  function renderCard(it) {
+    var tipo = tipoLabel[it.tipo] || it.tipo;
+    var thumb = it.imagem_url
+      ? '<div class="press-thumb"><img src="' + esc(it.imagem_url) + '" alt="' + esc(it.titulo) + '" loading="lazy" /></div>'
+      : '<div class="press-thumb"><div class="press-thumb-ph">' + esc((it.veiculo || 'IM').slice(0, 2).toUpperCase()) + '</div></div>';
+    var destBadge = it.destaque ? '<span class="press-badge press-badge-dest">Destaque</span>' : '';
+    var data = it.data_publicacao ? '<span class="press-data">' + esc(formatarData(it.data_publicacao)) + '</span>' : '';
+    var link = it.url
+      ? '<a class="press-link" href="' + esc(it.url) + '" target="_blank" rel="noopener">Ler mais <i data-lucide="external-link"></i></a>'
+      : '';
+    var titulo = it.url
+      ? '<h3 class="press-titulo"><a href="' + esc(it.url) + '" target="_blank" rel="noopener">' + esc(it.titulo) + '</a></h3>'
+      : '<h3 class="press-titulo">' + esc(it.titulo) + '</h3>';
+
+    return '<article class="press-card' + (it.destaque ? ' destaque' : '') + '">' +
+      thumb +
+      '<div class="press-body">' +
+        '<div class="press-meta">' +
+          '<span class="press-badge press-badge-tipo">' + esc(tipo) + '</span>' +
+          destBadge +
+          (it.veiculo ? '<span class="press-veiculo">' + esc(it.veiculo) + '</span>' : '') +
+          data +
+        '</div>' +
+        titulo +
+        (it.descricao ? '<p class="press-desc">' + esc(it.descricao) + '</p>' : '') +
+        link +
+      '</div>' +
+    '</article>';
+  }
+
+  function renderGrid(lista) {
+    var grid = document.getElementById('press-grid');
+    if (!lista.length) {
+      grid.innerHTML = '<div class="press-empty"><b>Nenhum item encontrado</b>Ainda não há conteúdo nesta categoria.</div>';
+      return;
+    }
+    grid.innerHTML = lista.map(renderCard).join('');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  }
+
+  function aplicarFiltro(tipo) {
+    tipoAtivo = tipo;
+    var filtrados = tipo === 'todos' ? todosItens : todosItens.filter(function (it) { return it.tipo === tipo; });
+    renderGrid(filtrados);
+  }
+
+  document.getElementById('filter-bar').addEventListener('click', function (e) {
+    var btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    document.querySelectorAll('.filter-btn').forEach(function (b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    aplicarFiltro(btn.dataset.tipo);
+  });
+
+  fetch(API_URL + '/api/imprensa')
+    .then(function (r) { return r.json(); })
+    .then(function (dados) {
+      todosItens = dados;
+      renderGrid(todosItens);
+    })
+    .catch(function () {
+      document.getElementById('press-grid').innerHTML =
+        '<div class="press-empty"><b>Erro ao carregar</b>Não foi possível conectar à API.</div>';
+    });
+</script>
+<script src="assets/site.js"></script>
+</body>
+</html>
