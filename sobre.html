@@ -10,6 +10,92 @@
 <link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;700&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&family=Roboto:wght@500;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="assets/home.css" />
 <link rel="stylesheet" href="assets/pages.css" />
+<style>
+/* ── Line cards: clickable ── */
+.line-card { cursor: pointer; transition: border-color .25s, transform .25s; }
+.line-card:hover { border-color: rgba(255,255,255,0.22); transform: translateY(-3px); }
+.lm-see-more {
+  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--teal);
+  margin-top: 14px; display: flex; align-items: center; gap: 5px;
+}
+
+/* ── Line Modal overlay ── */
+.lm-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px 16px;
+  pointer-events: none; visibility: hidden;
+}
+.lm-bg {
+  position: absolute; inset: 0;
+  background: rgba(11,17,32,0.88);
+  opacity: 0; cursor: pointer;
+}
+.lm-wrap {
+  position: relative; z-index: 1;
+  width: 100%; max-width: 640px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+/* ── Panels ── */
+.lm-panel { border-radius: 12px; will-change: transform; }
+.lm-panel-main {
+  background: var(--surface); border: 1px solid var(--line);
+  padding: 36px; position: relative;
+}
+.lm-panel-accent {
+  background: linear-gradient(135deg, #16a085 0%, #0d7063 100%);
+  padding: 24px 32px;
+}
+
+/* ── Close ── */
+.lm-close {
+  position: absolute; top: 16px; right: 20px;
+  background: none; border: none; color: var(--body-dim);
+  font-size: 1.5rem; cursor: pointer; line-height: 1; padding: 4px;
+  transition: color .2s;
+}
+.lm-close:hover { color: var(--white); }
+
+/* ── Main panel content ── */
+.lm-idx {
+  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--amber); margin-bottom: 10px;
+}
+.lm-title {
+  font-size: clamp(1.05rem, 2.2vw, 1.3rem); font-weight: 700;
+  line-height: 1.35; color: var(--white); margin-bottom: 18px;
+}
+.lm-desc { font-size: 0.9rem; color: var(--body); line-height: 1.75; }
+
+/* ── Accent panel content ── */
+.lm-kw-label {
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 10px;
+}
+.lm-keywords { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
+.lm-kw-badge {
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.05em;
+  padding: 4px 11px; border-radius: 100px;
+  border: 1px solid rgba(255,255,255,0.28);
+  color: rgba(255,255,255,0.88); background: rgba(255,255,255,0.08);
+}
+.lm-cnpq-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.08em;
+  text-transform: uppercase; text-decoration: none;
+  color: rgba(255,255,255,0.9);
+  border: 1px solid rgba(255,255,255,0.35); border-radius: 100px;
+  padding: 6px 16px; transition: background .2s;
+}
+.lm-cnpq-link:hover { background: rgba(255,255,255,0.15); }
+
+@media (max-width: 600px) {
+  .lm-panel-main { padding: 28px 22px; }
+  .lm-panel-accent { padding: 18px 22px; }
+}
+</style>
 </head>
 <body data-page="sobre">
 
@@ -94,9 +180,9 @@
   <div class="container">
     <div class="sec-head reveal"><span class="tagline">Linhas de pesquisa</span><h2 class="h-sec">Três frentes, um método</h2><p class="lead">Da circulação da informação em ambientes digitais à soberania do conhecimento científico.</p></div>
     <div class="line-cards reveal" style="margin-top:48px;">
-      <article class="line-card"><span class="line-card-idx">L1</span><h3 class="h-card">Soberania Científica, Integridade da Pesquisa e Justiça Epistêmica</h3><p>Geopolíticas da ciência, integridade e justiça na produção e circulação do conhecimento.</p><div class="line-card-meta">1 estudante · 5 pesquisadores</div></article>
-      <article class="line-card"><span class="line-card-idx">L2</span><h3 class="h-card">Ciência Aberta, Altmetria e Estudos de Mídias Sociais da Ciência</h3><p>Métricas alternativas de impacto e a presença social da ciência nas mídias digitais.</p><div class="line-card-meta">9 estudantes · 8 pesquisadores</div></article>
-      <article class="line-card"><span class="line-card-idx">L3</span><h3 class="h-card">Cibermetria, Sociabilidades e Mediação da Informação em Ambientes Digitais</h3><p>Como a informação circula, é mediada e gera sociabilidades em redes, plataformas e comunidades online.</p><div class="line-card-meta">8 estudantes · 6 pesquisadores</div></article>
+      <article class="line-card" data-line="l1"><span class="line-card-idx">L1</span><h3 class="h-card">Soberania Científica, Integridade da Pesquisa e Justiça Epistêmica</h3><p>Geopolíticas da ciência, integridade e justiça na produção e circulação do conhecimento.</p><div class="line-card-meta">1 estudante · 5 pesquisadores</div><div class="lm-see-more">Ver mais →</div></article>
+      <article class="line-card" data-line="l2"><span class="line-card-idx">L2</span><h3 class="h-card">Ciência Aberta, Altmetria e Estudos de Mídias Sociais da Ciência</h3><p>Métricas alternativas de impacto e a presença social da ciência nas mídias digitais.</p><div class="line-card-meta">9 estudantes · 8 pesquisadores</div><div class="lm-see-more">Ver mais →</div></article>
+      <article class="line-card" data-line="l3"><span class="line-card-idx">L3</span><h3 class="h-card">Cibermetria, Sociabilidades e Mediação da Informação em Ambientes Digitais</h3><p>Como a informação circula, é mediada e gera sociabilidades em redes, plataformas e comunidades online.</p><div class="line-card-meta">8 estudantes · 6 pesquisadores</div><div class="lm-see-more">Ver mais →</div></article>
     </div>
     <div class="reveal" style="margin-top:56px;">
       <span class="tagline">Estudos realizados</span>
@@ -131,9 +217,160 @@
 
 </main>
 
+<!-- ── Line Modal (GSAP interruptible enter/exit) ── -->
+<div class="lm-overlay" id="lm-overlay" role="dialog" aria-modal="true" aria-labelledby="lm-title">
+  <div class="lm-bg" id="lm-bg"></div>
+  <div class="lm-wrap">
+    <div class="lm-panel lm-panel-main">
+      <button class="lm-close" id="lm-close" aria-label="Fechar">×</button>
+      <p class="lm-content lm-idx" id="lm-idx"></p>
+      <h2 class="lm-content lm-title" id="lm-title"></h2>
+      <p class="lm-content lm-desc" id="lm-desc"></p>
+    </div>
+    <div class="lm-panel lm-panel-accent">
+      <p class="lm-content lm-kw-label">Palavras-chave</p>
+      <div class="lm-content lm-keywords" id="lm-keywords"></div>
+      <a class="lm-content lm-cnpq-link" id="lm-cnpq-link" href="#" target="_blank" rel="noopener">Ver no CNPq →</a>
+    </div>
+  </div>
+</div>
+
 <div data-chrome="footer"></div>
 
 <script src="https://unpkg.com/lucide@0.298.0/dist/umd/lucide.min.js"></script>
 <script src="assets/site.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var LINHAS = {
+    l1: {
+      badge: 'L1',
+      title: 'Soberania Científica, Integridade da Pesquisa e Justiça Epistêmica',
+      desc: 'Desenvolve estudos sobre as dimensões políticas, éticas, epistemológicas e geopolíticas da produção, avaliação e circulação da ciência. Abrange soberania científica, justiça epistêmica, comunicação científica inclusiva, ciência aberta, métricas responsáveis, cientometria forense, integridade da pesquisa, manipulação de indicadores, periódicos predatórios, desinformação científica, epistemologias do sul, métricas decoloniais, circulação desigual e distorcida de evidências, geopolítica da ciência.',
+      keywords: ['Soberania científica', 'Integridade da pesquisa', 'Justiça epistêmica', 'Cientometria forense', 'Geopolítica da ciência', 'Desinformação científica'],
+      cnpq: 'http://dgp.cnpq.br/dgp/espelholinha/52070194506709051439877'
+    },
+    l2: {
+      badge: 'L2',
+      title: 'Ciência Aberta, Altmetria e Estudos de Mídias Sociais da Ciência',
+      desc: 'Desenvolve estudos sobre ciência aberta, comunicação científica e circulação social da ciência em ambientes digitais. Abrange pesquisas em altmetria, métricas de mídias sociais da ciência, comunicação pública da ciência, estudos sociais da ciência, comunidades de atenção online, debate público da ciência, presença e impacto digital de pesquisadores, instituições e produtos da ciência, divulgação científica e marketing científico digital, storytelling, cultpop e influenciadores de ciência.',
+      keywords: ['Ciência Aberta', 'Altmetria e métricas de mídias sociais', 'Marketing científico digital', 'Estudos de mídias sociais da ciência', 'Redes de comunidades de atenção'],
+      cnpq: 'http://dgp.cnpq.br/dgp/espelholinha/52070194506709051439875'
+    },
+    l3: {
+      badge: 'L3',
+      title: 'Cibermetria, Sociabilidades e Mediação da Informação em Ambientes Digitais',
+      desc: 'Desenvolve estudos métricos sobre produção, mediação, circulação e apropriação da informação em ambientes digitais e plataformas sociotécnicas. Abrange cibermetria, estudos métricos de mídias sociais, práticas informacionais, desinformação, cultura digital, mediação algorítmica, inteligência artificial, democracia digital, comunicação política, ciberativismo, analisando dinâmicas socioculturais associadas às métricas de circulação de informações e narrativas em ambientes digitais.',
+      keywords: ['Cibermetria', 'Democracia digital', 'Sociabilidades digitais', 'Mediação da informação', 'Cultura digital'],
+      cnpq: 'http://dgp.cnpq.br/dgp/espelholinha/52070194506709051439916'
+    }
+  };
+
+  var isOpen = false;
+  var tl;
+  var enterEndTime = 0;
+
+  function populate(key) {
+    var d = LINHAS[key];
+    if (!d) return;
+    document.getElementById('lm-idx').textContent = d.badge;
+    document.getElementById('lm-title').textContent = d.title;
+    document.getElementById('lm-desc').textContent = d.desc;
+    document.getElementById('lm-cnpq-link').href = d.cnpq;
+    document.getElementById('lm-keywords').innerHTML = d.keywords
+      .map(function (k) { return '<span class="lm-kw-badge">' + k + '</span>'; })
+      .join('');
+  }
+
+  function buildTimeline() {
+    if (tl) tl.revert();
+
+    gsap.set('#lm-overlay', { visibility: 'hidden' });
+    gsap.set('.lm-bg', { opacity: 0 });
+    gsap.set('.lm-content', { opacity: 0, y: 10 });
+
+    tl = gsap.timeline({ paused: true })
+
+      .set('#lm-overlay', { visibility: 'visible', pointerEvents: 'auto' })
+
+      // ═══ ENTER ═══
+      .to('.lm-bg', {
+        opacity: 1, duration: 0.35, ease: 'power2.out',
+        easeReverse: 'power4.out'
+      }, 0)
+
+      .fromTo('.lm-panel',
+        { x: '110%', y: 0, rotation: 0 },
+        { x: '0%', duration: 0.55, ease: 'back.out(1.3)',
+          easeReverse: 'power3.in', stagger: 0.1 },
+        0
+      )
+
+      .to('.lm-content', {
+        opacity: 1, y: 0, duration: 0.8, ease: 'expo.out', stagger: 0.04
+      }, 0.1)
+
+      // ═══ PAUSE ═══
+      .addPause();
+
+    enterEndTime = tl.duration();
+
+    // ═══ EXIT — painéis caem com rotação aleatória ═══
+    tl
+      .to('.lm-panel', {
+        y: '110vh',
+        rotation: 'random(-20, 20)',
+        duration: 0.9,
+        ease: 'power3.in',
+        stagger: { from: 'end', each: 0.05 }
+      })
+      .to('.lm-bg', { opacity: 0, duration: 0.28, ease: 'power2.in' }, '<0.1')
+      .set('#lm-overlay', { visibility: 'hidden', pointerEvents: 'none' });
+  }
+
+  function openModal(key) {
+    populate(key);
+    isOpen = true;
+    tl.timeScale(1).restart();
+  }
+
+  function closeModal() {
+    if (!isOpen) return;
+    isOpen = false;
+    if (tl.time() < enterEndTime) {
+      // fechado durante a entrada — reverte rapidamente
+      tl.timeScale(2).reverse();
+    } else {
+      // totalmente aberto — queda dramática
+      tl.timeScale(1).play();
+    }
+  }
+
+  function init() {
+    buildTimeline();
+
+    document.querySelectorAll('.line-card[data-line]').forEach(function (card) {
+      card.addEventListener('click', function () {
+        openModal(this.getAttribute('data-line'));
+      });
+    });
+
+    document.getElementById('lm-close').addEventListener('click', closeModal);
+    document.getElementById('lm-bg').addEventListener('click', closeModal);
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && isOpen) closeModal();
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
 </body>
 </html>
