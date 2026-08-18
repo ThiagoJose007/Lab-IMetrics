@@ -109,13 +109,13 @@
   <div id="estado-erro" class="estado" style="display:none">
     <b>Matéria não encontrada</b>
     <p>O item solicitado não existe ou foi removido.</p>
-    <a href="/imprensa">← Voltar para Imprensa</a>
+    <a href="/imprensa.html">← Voltar para Imprensa</a>
   </div>
 
   <section class="section" id="conteudo" style="display:none; padding-top:48px; padding-bottom:80px;">
     <div class="container">
 
-      <a class="btn-voltar" id="btn-voltar" href="/imprensa">Voltar para Imprensa</a>
+      <a class="btn-voltar" id="btn-voltar" href="/imprensa.html">Voltar para Imprensa</a>
 
       <div class="detalhe-inner">
 
@@ -180,7 +180,7 @@
 
   document.getElementById('btn-voltar').addEventListener('click', function (e) {
     e.preventDefault();
-    window.location.href = '/imprensa';
+    window.location.href = '/imprensa.html';
   });
 
   var params = new URLSearchParams(window.location.search);
