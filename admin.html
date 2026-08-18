@@ -429,10 +429,10 @@
 
     <!-- Passo 1: Upload / colar -->
     <div id="import-step1">
-      <p class="import-hint">Exporte sua planilha como CSV e selecione o arquivo abaixo. O sistema detecta automaticamente colunas como título, autores, ano, DOI, revista, etc.</p>
+      <p class="import-hint">Selecione um arquivo <b>.xlsx</b> ou <b>.csv</b> exportado da sua planilha. O sistema detecta automaticamente as colunas (título, autores, ano, DOI, revista, etc.).</p>
       <div class="import-file-area">
-        <label class="import-file-btn" for="import-file-input">Escolher arquivo .csv</label>
-        <input type="file" id="import-file-input" accept=".csv,.txt" style="display:none" />
+        <label class="import-file-btn" for="import-file-input">Escolher arquivo .xlsx / .csv</label>
+        <input type="file" id="import-file-input" accept=".csv,.txt,.xlsx,.xls" style="display:none" />
         <span id="import-file-name" class="import-file-name">Nenhum arquivo selecionado</span>
       </div>
       <div class="field" style="margin-top:16px">
@@ -636,6 +636,7 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
 <script src="assets/config.js"></script>
 <script>
   var token = localStorage.getItem('imetrics_token');
@@ -1366,9 +1367,34 @@
   document.getElementById('import-file-input').addEventListener('change', function() {
     var file = this.files[0]; if (!file) return;
     document.getElementById('import-file-name').textContent = file.name;
-    var reader = new FileReader();
-    reader.onload = function(e) { document.getElementById('import-csv-text').value = e.target.result; };
-    reader.readAsText(file, 'UTF-8');
+    var ext = file.name.split('.').pop().toLowerCase();
+
+    if (ext === 'xlsx' || ext === 'xls') {
+      if (!window.XLSX) {
+        var errEl = document.getElementById('import-step1-err');
+        errEl.textContent = 'Biblioteca Excel ainda carregando — aguarde um instante e tente novamente.';
+        errEl.style.display = ''; return;
+      }
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          var wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+          var ws = wb.Sheets[wb.SheetNames[0]];
+          var csv = XLSX.utils.sheet_to_csv(ws);
+          document.getElementById('import-csv-text').value = csv;
+          document.getElementById('import-delim').value = '';
+        } catch(err) {
+          var errEl = document.getElementById('import-step1-err');
+          errEl.textContent = 'Erro ao ler o arquivo Excel: ' + err.message;
+          errEl.style.display = '';
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      var reader = new FileReader();
+      reader.onload = function(e) { document.getElementById('import-csv-text').value = e.target.result; };
+      reader.readAsText(file, 'UTF-8');
+    }
   });
 
   document.getElementById('import-analisar').addEventListener('click', function() {
