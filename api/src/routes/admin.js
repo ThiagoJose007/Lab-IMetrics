@@ -60,6 +60,35 @@ router.post('/publicacoes/importar', async (req, res) => {
   }
 });
 
+// POST /api/admin/publicacoes/excluir-em-lote — excluir publicações selecionadas
+router.post('/publicacoes/excluir-em-lote', async (req, res) => {
+  const { ids } = req.body;
+  if (!Array.isArray(ids) || !ids.length) {
+    return res.status(400).json({ erro: 'Nenhum ID fornecido' });
+  }
+  try {
+    const { rowCount } = await pool.query(
+      'DELETE FROM publicacoes WHERE id = ANY($1::int[])',
+      [ids]
+    );
+    res.json({ removidos: rowCount });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao excluir publicações' });
+  }
+});
+
+// DELETE /api/admin/publicacoes — limpar todas as publicações
+router.delete('/publicacoes', async (_req, res) => {
+  try {
+    const { rowCount } = await pool.query('DELETE FROM publicacoes');
+    res.json({ removidos: rowCount });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao limpar publicações' });
+  }
+});
+
 // PUT /api/admin/publicacoes/:id — editar pesquisa
 router.put('/publicacoes/:id', async (req, res) => {
   const { titulo, autores, ano, tipo, linha, resumo, doi, link, revista, volume, numero, paginas } = req.body;

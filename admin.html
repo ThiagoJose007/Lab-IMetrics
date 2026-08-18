@@ -155,6 +155,27 @@
   .img-url-ext:focus { outline: none; border-color: rgba(255,255,255,0.3); }
   .img-url-ext::placeholder { color: var(--body-dim); }
 
+  /* ── Botão perigo ── */
+  .btn-danger {
+    font-family: var(--sans); font-weight: 700; font-size: 0.9rem;
+    background: none; color: var(--red); border: 1px solid rgba(239,68,68,0.35); border-radius: 8px;
+    padding: 10px 20px; cursor: pointer; white-space: nowrap; transition: all .2s;
+  }
+  .btn-danger:hover { background: rgba(239,68,68,0.1); }
+
+  /* ── Barra de seleção em massa ── */
+  .bulk-bar {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 10px 16px; background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 8px; margin-bottom: 12px;
+  }
+  .bulk-bar .bulk-info { color: var(--body); font-size: 0.9rem; flex: 1; }
+  input[type="checkbox"].row-check, input[type="checkbox"]#check-all {
+    cursor: pointer; accent-color: var(--amber); width: 16px; height: 16px;
+  }
+  #tabela th:first-child { width: 44px; text-align: center; }
+  #tabela td:first-child { text-align: center; }
+
   /* ── Botão secundário ── */
   .btn-secondary {
     font-family: var(--sans); font-weight: 700; font-size: 0.9rem;
@@ -222,13 +243,20 @@
     <div class="action-bar">
       <input class="search-input" id="busca" type="search" placeholder="Buscar por título…" />
       <button class="btn-secondary" id="btn-importar">↑ Importar CSV</button>
+      <button class="btn-danger" id="btn-limpar-tudo">Limpar tudo</button>
       <button class="btn-primary" id="btn-nova">+ Nova publicação</button>
+    </div>
+
+    <div class="bulk-bar" id="bulk-bar" style="display:none">
+      <span class="bulk-info" id="bulk-count"></span>
+      <button class="btn-danger" id="btn-excluir-selecionadas">Excluir selecionadas</button>
     </div>
 
     <div class="table-wrap">
       <table id="tabela">
         <thead>
           <tr>
+            <th><input type="checkbox" id="check-all" title="Selecionar todas" /></th>
             <th>#</th>
             <th>Título</th>
             <th>Autores</th>
@@ -239,7 +267,7 @@
           </tr>
         </thead>
         <tbody id="tbody">
-          <tr><td colspan="7"><div class="state-box">Carregando…</div></td></tr>
+          <tr><td colspan="8"><div class="state-box">Carregando…</div></td></tr>
         </tbody>
       </table>
     </div>
@@ -613,6 +641,7 @@
   if (!token) window.location.href = '/login';
 
   var publicacoes = [];
+  var selecionados = new Set();
   var editandoId = null;
   var membros = [];
   var editandoMembroId = null;
@@ -688,21 +717,26 @@
       renderTabela(publicacoes);
       document.getElementById('stats').innerHTML = 'Total: <b>' + publicacoes.length + '</b> publicações';
     } catch (e) {
-      document.getElementById('tbody').innerHTML = '<tr><td colspan="7"><div class="state-box"><b>Erro de conexão</b>Verifique se a API está rodando em ' + API_URL + '</div></td></tr>';
+      document.getElementById('tbody').innerHTML = '<tr><td colspan="8"><div class="state-box"><b>Erro de conexão</b>Verifique se a API está rodando em ' + API_URL + '</div></td></tr>';
     }
   }
 
   // ── Renderizar tabela publicações ──
   function renderTabela(lista) {
+    selecionados.clear();
+    atualizarBulkBar();
+    var ca = document.getElementById('check-all');
+    if (ca) { ca.checked = false; ca.indeterminate = false; }
     var tbody = document.getElementById('tbody');
     if (!lista.length) {
-      tbody.innerHTML = '<tr><td colspan="7"><div class="state-box"><b>Nenhuma publicação encontrada</b>Clique em "+ Nova publicação" para começar.</div></td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8"><div class="state-box"><b>Nenhuma publicação encontrada</b>Clique em "+ Nova publicação" para começar.</div></td></tr>';
       return;
     }
     tbody.innerHTML = lista.map(function (p) {
       var autores = Array.isArray(p.autores) ? p.autores.join('; ') : (p.autores || '—');
       var tipo = p.tipo ? p.tipo.charAt(0).toUpperCase() + p.tipo.slice(1) : '—';
       return '<tr>' +
+        '<td><input type="checkbox" class="row-check" data-id="' + p.id + '" /></td>' +
         '<td><span class="badge">' + p.id + '</span></td>' +
         '<td class="td-title"><div class="td-title-text">' + esc(p.titulo) + '</div></td>' +
         '<td>' + esc(autores.length > 40 ? autores.slice(0, 40) + '…' : autores) + '</td>' +
@@ -1391,6 +1425,74 @@
   });
 
   document.getElementById('import-fechar3').addEventListener('click', fecharModalImportar);
+
+  // ── Seleção em massa ──
+
+  function atualizarBulkBar() {
+    var n = selecionados.size;
+    document.getElementById('bulk-bar').style.display = n ? '' : 'none';
+    document.getElementById('bulk-count').textContent =
+      n + ' publicaç' + (n === 1 ? 'ão selecionada' : 'ões selecionadas');
+  }
+
+  document.getElementById('tbody').addEventListener('change', function(e) {
+    if (!e.target.classList.contains('row-check')) return;
+    var id = parseInt(e.target.dataset.id);
+    if (e.target.checked) selecionados.add(id); else selecionados.delete(id);
+    atualizarBulkBar();
+    var all = document.querySelectorAll('#tbody .row-check');
+    var chk = document.querySelectorAll('#tbody .row-check:checked');
+    var ca = document.getElementById('check-all');
+    ca.indeterminate = chk.length > 0 && chk.length < all.length;
+    ca.checked = all.length > 0 && chk.length === all.length;
+  });
+
+  document.getElementById('check-all').addEventListener('change', function() {
+    var checked = this.checked;
+    document.querySelectorAll('#tbody .row-check').forEach(function(cb) {
+      cb.checked = checked;
+      var id = parseInt(cb.dataset.id);
+      if (checked) selecionados.add(id); else selecionados.delete(id);
+    });
+    atualizarBulkBar();
+  });
+
+  document.getElementById('btn-excluir-selecionadas').addEventListener('click', async function() {
+    var ids = Array.from(selecionados);
+    if (!ids.length) return;
+    var n = ids.length;
+    if (!confirm('Excluir ' + n + ' publicaç' + (n === 1 ? 'ão' : 'ões') + ' selecionada' + (n === 1 ? '' : 's') + '?\nEsta ação não pode ser desfeita.')) return;
+    try {
+      var res = await fetch(API_URL + '/api/admin/publicacoes/excluir-em-lote', {
+        method: 'POST', headers: authHeaders(), body: JSON.stringify({ ids: ids })
+      });
+      if (res.status === 401) { tratar401(); return; }
+      var data = await res.json();
+      if (!res.ok) throw new Error(data.erro || 'Erro');
+      toast(data.removidos + ' publicaç' + (data.removidos === 1 ? 'ão removida' : 'ões removidas') + '.', 'ok');
+      carregar();
+    } catch(err) {
+      toast('Erro ao excluir: ' + err.message, 'err');
+    }
+  });
+
+  document.getElementById('btn-limpar-tudo').addEventListener('click', async function() {
+    var n = publicacoes.length;
+    if (!n) { toast('Nenhuma publicação para remover.', 'ok'); return; }
+    if (!confirm('Apagar TODAS as ' + n + ' publicações?\nEsta ação é irreversível.')) return;
+    try {
+      var res = await fetch(API_URL + '/api/admin/publicacoes', {
+        method: 'DELETE', headers: authHeaders()
+      });
+      if (res.status === 401) { tratar401(); return; }
+      var data = await res.json();
+      if (!res.ok) throw new Error(data.erro || 'Erro');
+      toast('Todas as publicações foram removidas.', 'ok');
+      carregar();
+    } catch(err) {
+      toast('Erro ao limpar: ' + err.message, 'err');
+    }
+  });
 
   carregar();
 </script>
