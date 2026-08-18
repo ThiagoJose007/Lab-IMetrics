@@ -56,10 +56,15 @@
     color: var(--white); margin-bottom: 28px;
   }
 
-  /* ── Descrição ── */
+  /* ── Descrições ── */
+  .detalhe-desc-curta {
+    font-size: clamp(1.05rem, 1.5vw, 1.2rem); color: var(--white);
+    line-height: 1.75; font-weight: 500;
+    text-align: justify; margin-bottom: 28px;
+  }
   .detalhe-desc {
-    font-size: clamp(1rem, 1.4vw, 1.1rem); color: var(--body);
-    line-height: 1.85; margin-bottom: 44px;
+    font-size: clamp(0.97rem, 1.4vw, 1.05rem); color: var(--body);
+    line-height: 1.85; text-align: justify; margin-bottom: 44px;
   }
 
   /* ── CTA artigo ── */
@@ -118,6 +123,8 @@
         <div class="detalhe-meta" id="detalhe-meta"></div>
 
         <h1 class="detalhe-titulo" id="detalhe-titulo"></h1>
+
+        <p class="detalhe-desc-curta" id="detalhe-desc-curta"></p>
 
         <p class="detalhe-desc" id="detalhe-desc"></p>
 
@@ -205,11 +212,18 @@
       // Título
       document.getElementById('detalhe-titulo').textContent = it.titulo;
 
-      // Descrição (completa ou curta)
-      var desc = it.descricao || it.descricao_curta || '';
+      // Descrição curta (lede)
+      var descCurtaEl = document.getElementById('detalhe-desc-curta');
+      if (it.descricao_curta) {
+        descCurtaEl.textContent = it.descricao_curta;
+      } else {
+        descCurtaEl.style.display = 'none';
+      }
+
+      // Descrição completa
       var descEl = document.getElementById('detalhe-desc');
-      if (desc) {
-        descEl.textContent = desc;
+      if (it.descricao) {
+        descEl.textContent = it.descricao;
       } else {
         descEl.style.display = 'none';
       }
