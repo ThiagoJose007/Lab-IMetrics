@@ -20,8 +20,8 @@
         '<div class="nav-left">' + LOGO +
           '<nav class="nav-links" aria-label="Navegação principal">' +
             lk('sobre.html', 'Sobre', 'sobre') +
-            lk('em-construcao.html', 'Pesquisas', 'publicacoes') +
-            lk('em-construcao.html', 'Equipe', 'equipe') +
+            lk('publicacoes.html', 'Pesquisas', 'publicacoes') +
+            lk('equipe.html', 'Equipe', 'equipe') +
             lk('imprensa.html', 'Imprensa', 'imprensa') +
             '<a href="https://tweetscovid-production.up.railway.app/" target="_blank" rel="noopener">Dashboard</a>' +
             '<button class="nav-more" data-menu-more aria-label="Mais">Mais <i data-lucide="chevron-down"></i></button>' +
@@ -29,7 +29,7 @@
         '</div>' +
         '<div class="nav-actions">' +
           '<button class="menu-toggle" data-menu-toggle aria-label="Abrir menu"><i data-lucide="menu"></i><span class="lbl-open">Menu</span><span class="lbl-close">Fechar</span></button>' +
-          '<a class="btn btn-primary btn-sm" href="em-construcao.html">Ver pesquisas</a>' +
+          '<a class="btn btn-primary btn-sm" href="publicacoes.html">Ver pesquisas</a>' +
         '</div>' +
       '</div>' +
       megaHTML() +
@@ -48,8 +48,8 @@
       '<div class="container mega-grid">' +
         '<div class="mega-col"><h4>Pesquisa</h4>' +
           megaItem('sobre.html#linhas', 'line-chart', 'Linha de pesquisa', 'Investigação do impacto científico na web') +
-          megaItem('em-construcao.html', 'book-open', 'Publicações', 'Artigos em periódicos nacionais e internacionais') +
-          megaItem('em-construcao.html', 'users', 'Equipe', 'Pesquisadores doutores e colaboradores') +
+          megaItem('publicacoes.html', 'book-open', 'Publicações', 'Artigos em periódicos nacionais e internacionais') +
+          megaItem('equipe.html', 'users', 'Equipe', 'Pesquisadores doutores e colaboradores') +
           megaItem('imprensa.html', 'newspaper', 'Imprensa', 'Matérias, entrevistas e aparições na mídia') +
           megaItem('sobre.html', 'info', 'Sobre', 'História e missão do laboratório') +
         '</div>' +
@@ -72,7 +72,7 @@
       '<div class="mega-bottom">' +
         '<span class="ask">Quer conhecer nosso trabalho?</span>' +
         '<span class="mb-actions">' +
-        '<a href="em-construcao.html"><i data-lucide="search"></i> Explorar</a></span>' +
+        '<a href="publicacoes.html"><i data-lucide="search"></i> Explorar</a></span>' +
       '</div>' +
     '</div>';
   }
@@ -85,8 +85,8 @@
     return '' +
     '<footer class="site-footer"><div class="container">' +
       '<div class="foot-links">' +
-        col('Navegação', [['Sobre','sobre.html'],['Pesquisas','em-construcao.html'],['Equipe','em-construcao.html'],['Publicações','em-construcao.html']]) +
-        col('Linhas ativas', [['Metodologia','sobre.html#linhas'],['Projetos','em-construcao.html'],['Estudos','sobre.html#linhas']]) +
+        col('Navegação', [['Sobre','sobre.html'],['Pesquisas','publicacoes.html'],['Equipe','equipe.html'],['Publicações','publicacoes.html']]) +
+        col('Linhas ativas', [['Metodologia','sobre.html#linhas'],['Projetos','publicacoes.html'],['Estudos','sobre.html#linhas']]) +
         col('Maceió, AL', [['Email','mailto:ronaldfa@gmail.com'],['Comunidade','em-construcao.html'],['Recursos','em-construcao.html'],['Dados abertos','em-construcao.html']]) +
         col('Documentação', [['Ferramentas','em-construcao.html'],['Repositório','em-construcao.html'],['Sobre nós','sobre.html'],['Missão','sobre.html'],['Histórico','sobre.html']]) +
         col('Parcerias', [['Certificações','sobre.html'],['Políticas','#'],['Privacidade','#'],['Termos de uso','#'],['Código de conduta','#']]) +
