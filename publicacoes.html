@@ -73,6 +73,11 @@
 
   /* Card clicável */
   .pub { cursor: pointer; }
+
+  /* Altmetric badge */
+  .pub-altmetric { display: flex; align-items: center; justify-content: flex-end; min-height: 60px; margin-bottom: 6px; }
+  .modal-altmetric { display: flex; align-items: center; gap: 14px; padding: 16px 0; border-top: 1px solid var(--line); margin-top: 20px; }
+  .modal-altmetric-label { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--body-dim); line-height: 1.4; }
 </style>
 </head>
 <body data-page="publicacoes">
@@ -156,6 +161,7 @@
       <p class="pub-modal-resumo" id="modal-resumo"></p>
     </div>
     <div class="pub-modal-actions" id="modal-actions"></div>
+    <div id="modal-altmetric"></div>
   </div>
 </div>
 
@@ -164,6 +170,7 @@
 <script src="https://unpkg.com/lucide@0.298.0/dist/umd/lucide.min.js"></script>
 <script src="assets/config.js"></script>
 <script src="assets/site.js"></script>
+<script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script>
 <script>
 (function () {
   var TODAS = [];
@@ -187,6 +194,9 @@
         (doiTexto ? '<p class="pub-doi">' + doiTexto + '</p>' : '') +
       '</div>' +
       '<div class="pub-aside">' +
+        '<div class="pub-altmetric">' +
+          (p.doi ? '<div class="altmetric-embed" data-badge-type="donut" data-doi="' + esc(p.doi) + '" data-hide-no-mentions="true" data-badge-popover="left" data-link-target="_blank"></div>' : '') +
+        '</div>' +
         '<span class="btn-link">Ver detalhes <i data-lucide="arrow-right"></i></span>' +
       '</div>' +
     '</article>';
@@ -241,6 +251,18 @@
         '<i data-lucide="download"></i> Download' +
       '</a>';
 
+    // Altmetric badge no modal
+    var altEl = document.getElementById('modal-altmetric');
+    if (p.doi) {
+      altEl.innerHTML = '<div class="modal-altmetric">' +
+        '<div class="altmetric-embed" data-badge-type="medium-donut" data-doi="' + esc(p.doi) + '" data-hide-no-mentions="true" data-badge-popover="right" data-link-target="_blank"></div>' +
+        '<span class="modal-altmetric-label">Altmetric<br>Score</span>' +
+      '</div>';
+      if (window._altmetric_embed_init) window._altmetric_embed_init();
+    } else {
+      altEl.innerHTML = '';
+    }
+
     document.getElementById('pub-overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
     if (window.lucide) window.lucide.createIcons();
@@ -257,8 +279,9 @@
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fecharModal(); });
 
-  // Clique nas publicações
+  // Clique nas publicações (ignora cliques no badge Altmetric)
   document.getElementById('pub-list').addEventListener('click', function (e) {
+    if (e.target.closest('.pub-altmetric')) return;
     var art = e.target.closest('[data-id]');
     if (art) abrirModal(parseInt(art.getAttribute('data-id')));
   });
@@ -280,6 +303,7 @@
     }
 
     if (window.lucide) window.lucide.createIcons();
+    if (window._altmetric_embed_init) window._altmetric_embed_init();
   }
 
   function gerarChipsAnos(publicacoes) {
