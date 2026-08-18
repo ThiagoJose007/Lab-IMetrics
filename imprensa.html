@@ -75,59 +75,11 @@
   .press-link:hover { opacity: 0.75; }
 
   .press-saiba-mais {
+    display: inline-flex; align-items: center; gap: 5px; margin-top: 4px;
     font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--teal); background: none; border: none; cursor: pointer; padding: 0;
-    transition: opacity .2s;
-  }
-  .press-saiba-mais:hover { opacity: 0.75; }
-  .press-actions { display: flex; align-items: center; gap: 16px; margin-top: 4px; flex-wrap: wrap; }
-
-  /* ── Press Modal ── */
-  .pm-overlay {
-    position: fixed; inset: 0; z-index: 500;
-    display: flex; align-items: center; justify-content: center;
-    padding: 20px 16px; pointer-events: none; visibility: hidden;
-  }
-  .pm-bg {
-    position: absolute; inset: 0; background: rgba(11,17,32,0.9);
-    opacity: 0; cursor: pointer;
-  }
-  .pm-wrap {
-    position: relative; z-index: 1;
-    width: 100%; max-width: 640px;
-    display: flex; flex-direction: column; gap: 10px;
-  }
-  .pm-panel { border-radius: 12px; will-change: transform; overflow: hidden; }
-  .pm-panel-main { background: var(--surface); border: 1px solid rgba(255,255,255,0.08); position: relative; }
-  .pm-panel-body { background: var(--surface-2); border: 1px solid rgba(255,255,255,0.08); padding: 24px 28px; }
-  .pm-close {
-    position: absolute; top: 12px; right: 16px;
-    background: none; border: none; color: rgba(255,255,255,0.5);
-    font-size: 1.5rem; cursor: pointer; line-height: 1; padding: 4px; z-index: 2;
-    transition: color .2s;
-  }
-  .pm-close:hover { color: var(--white, #F0F4FF); }
-  .pm-thumb { width: 100%; aspect-ratio: 16/9; overflow: hidden; background: var(--surface-2); }
-  .pm-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .pm-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 16px 20px 0; }
-  .pm-badge {
-    font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
-    padding: 3px 9px; border-radius: 100px; border: 1px solid;
-  }
-  .pm-badge-tipo { color: var(--teal); border-color: rgba(26,188,156,0.35); }
-  .pm-badge-dest { color: var(--amber); border-color: rgba(243,156,18,0.35); }
-  .pm-veiculo-data { font-family: var(--mono); font-size: 0.7rem; color: var(--body-dim); }
-  .pm-titulo {
-    font-size: clamp(1rem, 2.2vw, 1.3rem); font-weight: 700;
-    line-height: 1.35; padding: 12px 20px 20px;
-  }
-  .pm-desc { font-size: 0.9rem; line-height: 1.75; margin-bottom: 16px; color: var(--body); }
-  .pm-ler-mais {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase;
     color: var(--teal); text-decoration: none; transition: opacity .2s;
   }
-  .pm-ler-mais:hover { opacity: 0.75; }
+  .press-saiba-mais:hover { opacity: 0.75; }
 
   /* ── Empty / loading ── */
   .press-empty {
@@ -182,30 +134,8 @@
 
 <div data-chrome="footer"></div>
 
-<!-- Press Modal -->
-<div class="pm-overlay" id="pm-overlay" role="dialog" aria-modal="true" aria-label="Detalhes da matéria">
-  <div class="pm-bg" id="pm-bg"></div>
-  <div class="pm-wrap">
-    <div class="pm-panel pm-panel-main">
-      <button class="pm-close" id="pm-close" aria-label="Fechar">×</button>
-      <div class="pm-thumb" id="pm-thumb"></div>
-      <div class="pm-meta">
-        <span class="pm-badge pm-badge-tipo" id="pm-badge-tipo"></span>
-        <span class="pm-badge pm-badge-dest" id="pm-badge-dest">Destaque</span>
-        <span class="pm-veiculo-data" id="pm-veiculo"></span>
-      </div>
-      <h2 class="pm-titulo" id="pm-titulo"></h2>
-    </div>
-    <div class="pm-panel pm-panel-body">
-      <p class="pm-desc" id="pm-desc"></p>
-      <a class="pm-ler-mais" id="pm-link" href="#" target="_blank" rel="noopener">Ler artigo completo →</a>
-    </div>
-  </div>
-</div>
-
 <script src="assets/config.js"></script>
 <script src="https://unpkg.com/lucide@0.298.0/dist/umd/lucide.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
 <script>
   var todosItens = [];
   var tipoAtivo = 'todos';
@@ -243,7 +173,7 @@
 
     var temModal = it.descricao || it.descricao_curta;
     var saibaMais = temModal
-      ? '<button class="press-saiba-mais" onclick="abrirPressModal(' + it.id + ')">Saiba mais →</button>'
+      ? '<a class="press-saiba-mais" href="/imprensa-detalhe?id=' + it.id + '">Saiba mais →</a>'
       : '';
 
     return '<article class="press-card' + (it.destaque ? ' destaque' : '') + '" data-id="' + it.id + '">' +
@@ -257,10 +187,7 @@
         '</div>' +
         titulo +
         (textoCard ? '<p class="press-desc">' + esc(textoCard) + '</p>' : '') +
-        '<div class="press-actions">' +
-          (it.url ? '<a class="press-link" href="' + esc(it.url) + '" target="_blank" rel="noopener">Ler mais <i data-lucide="external-link"></i></a>' : '') +
-          saibaMais +
-        '</div>' +
+        saibaMais +
       '</div>' +
     '</article>';
   }
@@ -300,93 +227,6 @@
         '<div class="press-empty"><b>Erro ao carregar</b>Não foi possível conectar à API.</div>';
     });
 
-  // ── Press Modal (GSAP) ──
-  var pmIsOpen = false;
-  var pmTl;
-  var pmEnterEnd = 0;
-
-  function pmInit() {
-    if (pmTl) pmTl.revert();
-
-    gsap.set('#pm-overlay', { visibility: 'hidden', pointerEvents: 'none' });
-    gsap.set('.pm-bg', { opacity: 0 });
-
-    pmTl = gsap.timeline({ paused: true })
-      .set('#pm-overlay', { visibility: 'visible', pointerEvents: 'auto' })
-      .to('.pm-bg', { opacity: 1, duration: 0.38, ease: 'power2.out', easeReverse: 'power4.out' }, 0)
-      .fromTo('.pm-panel',
-        { x: '110%', y: 0, rotation: 0 },
-        { x: '0%', duration: 0.55, ease: 'back.out(1.3)', easeReverse: 'power3.in', stagger: 0.1 },
-        0
-      )
-      .addPause();
-
-    pmEnterEnd = pmTl.duration();
-
-    pmTl
-      .to('.pm-panel', {
-        y: '110vh', rotation: 'random(-20, 20)',
-        duration: 0.9, ease: 'power3.in',
-        stagger: { from: 'end', each: 0.05 }
-      })
-      .to('.pm-bg', { opacity: 0, duration: 0.28, ease: 'power2.in' }, '<0.1')
-      .set('#pm-overlay', { visibility: 'hidden', pointerEvents: 'none' });
-  }
-
-  function abrirPressModal(id) {
-    var it = todosItens.find(function (x) { return x.id === id; });
-    if (!it) return;
-
-    var imgSrc = resolverImg(it.imagem_url);
-    var tipo = tipoLabel[it.tipo] || it.tipo;
-    var data = it.data_publicacao ? formatarData(it.data_publicacao) : '';
-
-    var thumbEl = document.getElementById('pm-thumb');
-    if (imgSrc) {
-      thumbEl.innerHTML = '<img src="' + esc(imgSrc) + '" alt="' + esc(it.titulo) + '" />';
-      thumbEl.style.display = '';
-    } else {
-      thumbEl.innerHTML = '';
-      thumbEl.style.display = 'none';
-    }
-
-    document.getElementById('pm-badge-tipo').textContent = tipo;
-    var destEl = document.getElementById('pm-badge-dest');
-    destEl.style.display = it.destaque ? '' : 'none';
-    document.getElementById('pm-veiculo').textContent = [it.veiculo, data].filter(Boolean).join(' · ');
-    document.getElementById('pm-titulo').textContent = it.titulo;
-
-    var descEl = document.getElementById('pm-desc');
-    var texto = it.descricao || it.descricao_curta || '';
-    descEl.textContent = texto;
-    descEl.style.display = texto ? '' : 'none';
-
-    var linkEl = document.getElementById('pm-link');
-    if (it.url) { linkEl.href = it.url; linkEl.style.display = ''; }
-    else { linkEl.style.display = 'none'; }
-
-    pmIsOpen = true;
-    pmTl.timeScale(1).restart();
-  }
-
-  function fecharPressModal() {
-    if (!pmIsOpen) return;
-    pmIsOpen = false;
-    if (pmTl.time() < pmEnterEnd) {
-      pmTl.timeScale(2).reverse();
-    } else {
-      pmTl.timeScale(1).play();
-    }
-  }
-
-  document.getElementById('pm-close').addEventListener('click', fecharPressModal);
-  document.getElementById('pm-bg').addEventListener('click', fecharPressModal);
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fecharPressModal(); });
-
-  document.addEventListener('DOMContentLoaded', function () {
-    if (typeof gsap !== 'undefined') pmInit();
-  });
-  if (document.readyState !== 'loading' && typeof gsap !== 'undefined') pmInit();
 </script>
 <script src="assets/site.js"></script>
 </body>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title id="pg-title">Imprensa — Lab-iMetrics</title>
+<meta name="description" id="pg-desc" content="Matéria do Lab-iMetrics na mídia." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;700&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/home.css" />
+<link rel="stylesheet" href="assets/pages.css" />
+<style>
+  /* ── Botão Voltar ── */
+  .btn-voltar {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--body-dim); text-decoration: none; transition: color .2s;
+    margin-bottom: 40px;
+  }
+  .btn-voltar:hover { color: var(--white); }
+  .btn-voltar::before { content: '←'; }
+
+  /* ── Imagem ── */
+  .detalhe-thumb {
+    width: 100%; aspect-ratio: 16/9; border-radius: 10px;
+    overflow: hidden; background: var(--surface); margin-bottom: 32px;
+  }
+  .detalhe-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* ── Meta ── */
+  .detalhe-meta {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .d-badge {
+    font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 100px; border: 1px solid;
+  }
+  .d-badge-tipo  { color: var(--teal);  border-color: rgba(26,188,156,0.35); }
+  .d-badge-dest  { color: var(--amber); border-color: rgba(243,156,18,0.35); }
+  .detalhe-veiculo {
+    font-family: var(--mono); font-size: 0.76rem; color: var(--body-dim);
+  }
+
+  /* ── Título ── */
+  .detalhe-titulo {
+    font-family: var(--serif); font-size: clamp(1.5rem, 3.5vw, 2.3rem);
+    font-weight: 700; line-height: 1.3; letter-spacing: -0.01em;
+    color: var(--white); margin-bottom: 28px; max-width: 72ch;
+  }
+
+  /* ── Descrição ── */
+  .detalhe-desc {
+    font-size: clamp(1rem, 1.4vw, 1.1rem); color: var(--body);
+    line-height: 1.85; max-width: 68ch; margin-bottom: 44px;
+  }
+
+  /* ── CTA artigo ── */
+  .btn-artigo {
+    display: inline-flex; align-items: center; gap: 9px;
+    font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: #0B1120; background: var(--teal); border: none; border-radius: 8px;
+    padding: 14px 24px; text-decoration: none; transition: opacity .2s; font-weight: 600;
+  }
+  .btn-artigo:hover { opacity: 0.88; }
+  .btn-artigo svg { width: 14px; height: 14px; }
+
+  /* ── Estados ── */
+  .estado {
+    min-height: 60vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 12px;
+    color: var(--body-dim); font-size: 0.95rem; text-align: center; padding: 40px;
+  }
+  .estado b { font-size: 1.1rem; color: var(--body); }
+  .estado a { color: var(--teal); text-decoration: none; }
+  .estado a:hover { opacity: 0.8; }
+
+  /* ── Separador ── */
+  .detalhe-divider { height: 1px; background: var(--line-soft); border: 0; margin: 48px 0; max-width: 68ch; }
+
+  @media (max-width: 640px) {
+    .detalhe-titulo { font-size: 1.4rem; }
+    .btn-artigo { width: 100%; justify-content: center; }
+  }
+</style>
+</head>
+<body data-page="imprensa">
+
+<div data-chrome="header"></div>
+
+<main>
+  <div id="estado-carregando" class="estado">
+    <b>Carregando…</b>
+  </div>
+
+  <div id="estado-erro" class="estado" style="display:none">
+    <b>Matéria não encontrada</b>
+    <p>O item solicitado não existe ou foi removido.</p>
+    <a href="/imprensa">← Voltar para Imprensa</a>
+  </div>
+
+  <section class="section" id="conteudo" style="display:none; padding-top:48px; padding-bottom:80px;">
+    <div class="container">
+
+      <a class="btn-voltar" id="btn-voltar" href="/imprensa">Voltar para Imprensa</a>
+
+      <div id="detalhe-thumb-wrap"></div>
+
+      <div class="detalhe-meta" id="detalhe-meta"></div>
+
+      <h1 class="detalhe-titulo" id="detalhe-titulo"></h1>
+
+      <p class="detalhe-desc" id="detalhe-desc"></p>
+
+      <hr class="detalhe-divider" id="detalhe-divider" style="display:none" />
+
+      <a class="btn-artigo" id="btn-artigo" href="#" target="_blank" rel="noopener" style="display:none">
+        Acessar matéria original
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+      </a>
+
+    </div>
+  </section>
+</main>
+
+<div data-chrome="footer"></div>
+
+<script src="assets/config.js"></script>
+<script>
+(function () {
+  var tipoLabel = { materia: 'Matéria', entrevista: 'Entrevista', post: 'Post', podcast: 'Podcast', video: 'Vídeo' };
+
+  function esc(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function formatarData(d) {
+    if (!d) return '';
+    return new Date(d).toLocaleDateString('pt-BR', { timeZone: 'UTC', day: '2-digit', month: 'long', year: 'numeric' });
+  }
+
+  function resolverImg(url) {
+    if (!url) return '';
+    return url.startsWith('/api/imagens/') ? API_URL + url : url;
+  }
+
+  function mostrarErro() {
+    document.getElementById('estado-carregando').style.display = 'none';
+    document.getElementById('estado-erro').style.display = '';
+  }
+
+  function voltar(e) {
+    if (window.history.length > 1 && document.referrer) {
+      e.preventDefault();
+      history.back();
+    }
+  }
+  document.getElementById('btn-voltar').addEventListener('click', voltar);
+
+  var params = new URLSearchParams(window.location.search);
+  var id = parseInt(params.get('id'), 10);
+  if (!id) { mostrarErro(); return; }
+
+  fetch(API_URL + '/api/imprensa')
+    .then(function (r) { return r.json(); })
+    .then(function (lista) {
+      var it = lista.find(function (x) { return x.id === id; });
+      if (!it) { mostrarErro(); return; }
+
+      // Título da aba
+      document.getElementById('pg-title').textContent = it.titulo + ' — Imprensa · Lab-iMetrics';
+      if (it.descricao_curta || it.descricao) {
+        document.getElementById('pg-desc').setAttribute('content',
+          (it.descricao_curta || it.descricao).slice(0, 160));
+      }
+
+      // Imagem
+      var imgSrc = resolverImg(it.imagem_url);
+      if (imgSrc) {
+        document.getElementById('detalhe-thumb-wrap').innerHTML =
+          '<div class="detalhe-thumb"><img src="' + esc(imgSrc) + '" alt="' + esc(it.titulo) + '" /></div>';
+      }
+
+      // Meta badges
+      var tipo = tipoLabel[it.tipo] || it.tipo;
+      var metaHtml = '<span class="d-badge d-badge-tipo">' + esc(tipo) + '</span>';
+      if (it.destaque) metaHtml += '<span class="d-badge d-badge-dest">Destaque</span>';
+      var partes = [it.veiculo, it.data_publicacao ? formatarData(it.data_publicacao) : ''].filter(Boolean);
+      if (partes.length) metaHtml += '<span class="detalhe-veiculo">' + esc(partes.join(' · ')) + '</span>';
+      document.getElementById('detalhe-meta').innerHTML = metaHtml;
+
+      // Título
+      document.getElementById('detalhe-titulo').textContent = it.titulo;
+
+      // Descrição (completa ou curta)
+      var desc = it.descricao || it.descricao_curta || '';
+      var descEl = document.getElementById('detalhe-desc');
+      if (desc) {
+        descEl.textContent = desc;
+      } else {
+        descEl.style.display = 'none';
+      }
+
+      // Botão artigo original
+      if (it.url) {
+        var btnEl = document.getElementById('btn-artigo');
+        btnEl.href = it.url;
+        btnEl.style.display = '';
+        document.getElementById('detalhe-divider').style.display = '';
+      }
+
+      // Mostrar conteúdo
+      document.getElementById('estado-carregando').style.display = 'none';
+      document.getElementById('conteudo').style.display = '';
+    })
+    .catch(function () { mostrarErro(); });
+})();
+</script>
+<script src="assets/site.js"></script>
+</body>
+</html>
