@@ -23,6 +23,43 @@ router.post('/publicacoes', async (req, res) => {
   }
 });
 
+// POST /api/admin/publicacoes/importar — importar em lote
+router.post('/publicacoes/importar', async (req, res) => {
+  const { itens } = req.body;
+  if (!Array.isArray(itens) || !itens.length) {
+    return res.status(400).json({ erro: 'Nenhum item para importar' });
+  }
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    let inseridos = 0;
+    for (const item of itens) {
+      if (!item.titulo) continue;
+      const autores = Array.isArray(item.autores)
+        ? item.autores
+        : (item.autores ? String(item.autores).split(';').map(a => a.trim()).filter(Boolean) : []);
+      const ano = item.ano ? parseInt(item.ano) : null;
+      await client.query(
+        `INSERT INTO publicacoes (titulo, autores, ano, tipo, linha, resumo, doi, link, revista, volume, numero, paginas)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+        [item.titulo, autores, isNaN(ano) ? null : ano,
+         item.tipo || null, item.linha || null, item.resumo || null,
+         item.doi || null, item.link || null, item.revista || null,
+         item.volume || null, item.numero || null, item.paginas || null]
+      );
+      inseridos++;
+    }
+    await client.query('COMMIT');
+    res.json({ inseridos });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao importar: ' + err.message });
+  } finally {
+    client.release();
+  }
+});
+
 // PUT /api/admin/publicacoes/:id — editar pesquisa
 router.put('/publicacoes/:id', async (req, res) => {
   const { titulo, autores, ano, tipo, linha, resumo, doi, link, revista, volume, numero, paginas } = req.body;
