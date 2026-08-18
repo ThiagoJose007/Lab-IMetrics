@@ -20,7 +20,7 @@ app.use(cors({
     ? process.env.ALLOWED_ORIGINS.split(',')
     : '*',
 }));
-app.use(express.json());
+app.use(express.json({ limit: '2mb' }));
 
 // Limite global: 100 requisições por IP a cada 15 min
 app.use(rateLimit({
