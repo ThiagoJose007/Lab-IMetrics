@@ -179,12 +179,7 @@
     return '<article class="press-card' + (it.destaque ? ' destaque' : '') + '" data-id="' + it.id + '">' +
       thumb +
       '<div class="press-body">' +
-        '<div class="press-meta">' +
-          '<span class="press-badge press-badge-tipo">' + esc(tipo) + '</span>' +
-          destBadge +
-          (it.veiculo ? '<span class="press-veiculo">' + esc(it.veiculo) + '</span>' : '') +
-          data +
-        '</div>' +
+        (data ? '<span class="press-data">' + esc(formatarData(it.data_publicacao)) + '</span>' : '') +
         titulo +
         (textoCard ? '<p class="press-desc">' + esc(textoCard) + '</p>' : '') +
         saibaMais +
