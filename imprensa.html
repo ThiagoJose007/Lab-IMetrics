@@ -34,6 +34,7 @@
     background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
     overflow: hidden; display: flex; flex-direction: column;
     transition: border-color .2s, transform .2s;
+    text-decoration: none; color: inherit; cursor: pointer;
   }
   .press-card:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
   .press-card.destaque { border-color: rgba(243,156,18,0.4); }
@@ -158,34 +159,23 @@
   }
 
   function renderCard(it) {
-    var tipo = tipoLabel[it.tipo] || it.tipo;
     var imgSrc = resolverImg(it.imagem_url);
     var thumb = imgSrc
       ? '<div class="press-thumb"><img src="' + esc(imgSrc) + '" alt="' + esc(it.titulo) + '" loading="lazy" /></div>'
       : '<div class="press-thumb"><div class="press-thumb-ph">' + esc((it.veiculo || 'IM').slice(0, 2).toUpperCase()) + '</div></div>';
-    var destBadge = it.destaque ? '<span class="press-badge press-badge-dest">Destaque</span>' : '';
     var data = it.data_publicacao ? '<span class="press-data">' + esc(formatarData(it.data_publicacao)) + '</span>' : '';
-    var titulo = it.url
-      ? '<h3 class="press-titulo"><a href="' + esc(it.url) + '" target="_blank" rel="noopener">' + esc(it.titulo) + '</a></h3>'
-      : '<h3 class="press-titulo">' + esc(it.titulo) + '</h3>';
-
     var textoCard = it.descricao_curta ||
       (it.descricao ? it.descricao.slice(0, 130) + (it.descricao.length > 130 ? '…' : '') : '');
 
-    var temModal = it.descricao || it.descricao_curta;
-    var saibaMais = temModal
-      ? '<a class="press-saiba-mais" href="/imprensa-detalhe?id=' + it.id + '">Saiba mais →</a>'
-      : '';
-
-    return '<article class="press-card' + (it.destaque ? ' destaque' : '') + '" data-id="' + it.id + '">' +
+    return '<a class="press-card' + (it.destaque ? ' destaque' : '') + '" href="/imprensa-detalhe?id=' + it.id + '">' +
       thumb +
       '<div class="press-body">' +
-        (data ? '<span class="press-data">' + esc(formatarData(it.data_publicacao)) + '</span>' : '') +
-        titulo +
+        data +
+        '<h3 class="press-titulo">' + esc(it.titulo) + '</h3>' +
         (textoCard ? '<p class="press-desc">' + esc(textoCard) + '</p>' : '') +
-        saibaMais +
+        '<span class="press-saiba-mais">Saiba mais →</span>' +
       '</div>' +
-    '</article>';
+    '</a>';
   }
 
   function renderGrid(lista) {
