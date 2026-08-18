@@ -202,7 +202,7 @@
 <script src="https://unpkg.com/lucide@0.298.0/dist/umd/lucide.min.js"></script>
 <script src="assets/config.js"></script>
 <script src="assets/site.js"></script>
-<script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script>
+<script src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script>
 <script>
 (function () {
   var TODAS = [];
@@ -336,6 +336,7 @@
 
     if (window.lucide) window.lucide.createIcons();
     if (window._altmetric_embed_init) window._altmetric_embed_init();
+    else setTimeout(function () { if (window._altmetric_embed_init) window._altmetric_embed_init(); }, 1500);
   }
 
   function gerarChipsAnos(publicacoes) {
