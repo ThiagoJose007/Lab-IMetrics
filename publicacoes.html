@@ -195,7 +195,7 @@
       '</div>' +
       '<div class="pub-aside">' +
         '<div class="pub-altmetric">' +
-          (p.doi ? '<div class="altmetric-embed" data-badge-type="donut" data-doi="' + esc(p.doi) + '" data-hide-no-mentions="true" data-badge-popover="left" data-link-target="_blank"></div>' : '') +
+          (p.doi ? '<div class="altmetric-embed" data-badge-type="donut" data-doi="' + p.doi + '" data-hide-no-mentions="true" data-badge-popover="left" data-link-target="_blank"></div>' : '') +
         '</div>' +
         '<span class="btn-link">Ver detalhes <i data-lucide="arrow-right"></i></span>' +
       '</div>' +
@@ -255,7 +255,7 @@
     var altEl = document.getElementById('modal-altmetric');
     if (p.doi) {
       altEl.innerHTML = '<div class="modal-altmetric">' +
-        '<div class="altmetric-embed" data-badge-type="medium-donut" data-doi="' + esc(p.doi) + '" data-hide-no-mentions="true" data-badge-popover="right" data-link-target="_blank"></div>' +
+        '<div class="altmetric-embed" data-badge-type="medium-donut" data-doi="' + p.doi + '" data-hide-no-mentions="true" data-badge-popover="right" data-link-target="_blank"></div>' +
         '<span class="modal-altmetric-label">Altmetric<br>Score</span>' +
       '</div>';
       if (window._altmetric_embed_init) window._altmetric_embed_init();
