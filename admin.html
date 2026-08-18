@@ -371,12 +371,21 @@
           <input type="text" name="papel" placeholder="Coordenador · Fundador" />
         </div>
         <div class="field">
-          <label>Categoria</label>
+          <label>Categoria (seção principal)</label>
           <select name="categoria">
             <option value="coordenador">Coordenação</option>
-            <option value="doutor" selected>Doutor(a)</option>
+            <option value="doutor" selected>Pesquisador(a)</option>
             <option value="estudante">Estudante</option>
             <option value="tecnico">Técnico(a)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Título acadêmico</label>
+          <select name="titulo">
+            <option value="">— sem título específico —</option>
+            <option value="doutor">Doutor(a)</option>
+            <option value="mestre">Mestre(a)</option>
+            <option value="graduando">Graduando(a)</option>
           </select>
         </div>
         <div class="field span2">
@@ -384,8 +393,8 @@
           <input type="text" name="area" placeholder="Altmetria · cibermetria · comunicação científica" />
         </div>
         <div class="field">
-          <label>Nível (para estudantes)</label>
-          <input type="text" name="nivel" placeholder="Doutorado, Mestrado, Graduação" />
+          <label>Nível / Programa</label>
+          <input type="text" name="nivel" placeholder="Doutorado em Ciência da Informação…" />
         </div>
         <div class="field">
           <label>Status</label>
@@ -801,6 +810,7 @@
     form.papel.value = m.papel || '';
     form.area.value = m.area || '';
     form.categoria.value = m.categoria || 'doutor';
+    form.titulo.value = m.titulo || '';
     form.nivel.value = m.nivel || '';
     var fotoUrl = m.foto_url || '';
     document.getElementById('img-url-membro').value = fotoUrl;
@@ -826,6 +836,7 @@
       papel:      form.papel.value || null,
       area:       form.area.value || null,
       categoria:  form.categoria.value || 'doutor',
+      titulo:     form.titulo.value || null,
       nivel:      form.nivel.value || null,
       foto_url:   form.foto_url.value || null,
       lattes_url: form.lattes_url.value || null,

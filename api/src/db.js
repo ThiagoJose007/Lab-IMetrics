@@ -61,6 +61,7 @@ async function initDB() {
     );
   `);
   // Migrações seguras: colunas adicionadas sem recriar a tabela
+  await pool.query(`ALTER TABLE membros ADD COLUMN IF NOT EXISTS titulo TEXT;`);
   await pool.query(`ALTER TABLE imprensa ADD COLUMN IF NOT EXISTS descricao_curta TEXT;`);
 
   await pool.query(`

@@ -136,15 +136,20 @@
     fetch(API_URL + '/api/membros')
       .then(function (r) { return r.json(); })
       .then(function (todos) {
+        // Seção principal: determinada por `categoria`
         var coord    = todos.filter(function (m) { return m.categoria === 'coordenador'; });
-        var doutores = todos.filter(function (m) { return m.categoria === 'doutor'; });
         var estudant = todos.filter(function (m) { return m.categoria === 'estudante'; });
         var tecnicos = todos.filter(function (m) { return m.categoria === 'tecnico'; });
 
-        renderGrupo('coordenadores-grid', coord,    'Coordenador(a)', 2);
-        renderGrupo('doutores-grid',      doutores,  'Doutor(a)',      10);
-        renderGrupo('estudantes-grid',    estudant,  'Estudante',      14);
-        renderGrupo('tecnicos-grid',      tecnicos,  'Técnico(a)',      2);
+        // Doutores: categoria=doutor OU titulo=doutor (inclui coordenadores e outros com título doutor)
+        var doutores = todos.filter(function (m) {
+          return m.categoria === 'doutor' || m.titulo === 'doutor';
+        });
+
+        renderGrupo('coordenadores-grid', coord,     'Coordenador(a)', 2);
+        renderGrupo('doutores-grid',      doutores,  'Doutor(a)',       10);
+        renderGrupo('estudantes-grid',    estudant,  'Estudante',       14);
+        renderGrupo('tecnicos-grid',      tecnicos,  'Técnico(a)',       2);
 
         if (typeof lucide !== 'undefined') lucide.createIcons();
       })

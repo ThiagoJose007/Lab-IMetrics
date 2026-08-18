@@ -75,13 +75,13 @@ router.get('/membros', async (_req, res) => {
 
 // POST /api/admin/membros
 router.post('/membros', async (req, res) => {
-  const { nome, papel, area, categoria, nivel, foto_url, lattes_url, orcid_url, ativo, ordem } = req.body;
+  const { nome, papel, area, categoria, titulo, nivel, foto_url, lattes_url, orcid_url, ativo, ordem } = req.body;
   if (!nome) return res.status(400).json({ erro: 'Nome obrigatório' });
   try {
     const { rows } = await pool.query(
-      `INSERT INTO membros (nome, papel, area, categoria, nivel, foto_url, lattes_url, orcid_url, ativo, ordem)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
-      [nome, papel, area, categoria || 'doutor', nivel, foto_url, lattes_url, orcid_url, ativo !== false, ordem || 0]
+      `INSERT INTO membros (nome, papel, area, categoria, titulo, nivel, foto_url, lattes_url, orcid_url, ativo, ordem)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING *`,
+      [nome, papel, area, categoria || 'doutor', titulo || null, nivel, foto_url, lattes_url, orcid_url, ativo !== false, ordem || 0]
     );
     res.status(201).json(rows[0]);
   } catch (err) {
@@ -92,14 +92,14 @@ router.post('/membros', async (req, res) => {
 
 // PUT /api/admin/membros/:id
 router.put('/membros/:id', async (req, res) => {
-  const { nome, papel, area, categoria, nivel, foto_url, lattes_url, orcid_url, ativo, ordem } = req.body;
+  const { nome, papel, area, categoria, titulo, nivel, foto_url, lattes_url, orcid_url, ativo, ordem } = req.body;
   if (!nome) return res.status(400).json({ erro: 'Nome obrigatório' });
   try {
     const { rows } = await pool.query(
-      `UPDATE membros SET nome=$1, papel=$2, area=$3, categoria=$4, nivel=$5,
-        foto_url=$6, lattes_url=$7, orcid_url=$8, ativo=$9, ordem=$10
-       WHERE id=$11 RETURNING *`,
-      [nome, papel, area, categoria || 'doutor', nivel, foto_url, lattes_url, orcid_url, ativo !== false, ordem || 0, req.params.id]
+      `UPDATE membros SET nome=$1, papel=$2, area=$3, categoria=$4, titulo=$5, nivel=$6,
+        foto_url=$7, lattes_url=$8, orcid_url=$9, ativo=$10, ordem=$11
+       WHERE id=$12 RETURNING *`,
+      [nome, papel, area, categoria || 'doutor', titulo || null, nivel, foto_url, lattes_url, orcid_url, ativo !== false, ordem || 0, req.params.id]
     );
     if (!rows.length) return res.status(404).json({ erro: 'Membro não encontrado' });
     res.json(rows[0]);
