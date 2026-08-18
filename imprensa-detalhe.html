@@ -169,13 +169,10 @@
     document.getElementById('estado-erro').style.display = '';
   }
 
-  function voltar(e) {
-    if (window.history.length > 1 && document.referrer) {
-      e.preventDefault();
-      history.back();
-    }
-  }
-  document.getElementById('btn-voltar').addEventListener('click', voltar);
+  document.getElementById('btn-voltar').addEventListener('click', function (e) {
+    e.preventDefault();
+    window.location.href = '/imprensa';
+  });
 
   var params = new URLSearchParams(window.location.search);
   var id = parseInt(params.get('id'), 10);
