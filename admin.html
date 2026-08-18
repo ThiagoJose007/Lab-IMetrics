@@ -414,8 +414,6 @@
               <span class="img-ph">Foto</span>
             </div>
             <input type="file" id="img-file-membro" accept="image/*" class="img-file" />
-            <span class="img-url-label">ou cole uma URL externa</span>
-            <input type="url" class="img-url-ext" id="img-url-membro-text" placeholder="https://…/foto.jpg" />
             <input type="hidden" name="foto_url" id="img-url-membro" />
           </div>
         </div>
@@ -483,8 +481,6 @@
               <span class="img-ph">Clique para escolher imagem</span>
             </div>
             <input type="file" id="img-file-imprensa" accept="image/*" class="img-file" />
-            <span class="img-url-label">ou cole uma URL externa</span>
-            <input type="url" class="img-url-ext" id="img-url-imprensa-text" placeholder="https://…/imagem.jpg" />
             <input type="hidden" name="imagem_url" id="img-url-imprensa" />
           </div>
         </div>
@@ -786,7 +782,6 @@
 
   function limparPreviewMembro() {
     document.getElementById('img-url-membro').value = '';
-    document.getElementById('img-url-membro-text').value = '';
     mostrarPreviewImg('img-preview-membro', null);
   }
 
@@ -814,7 +809,6 @@
     form.nivel.value = m.nivel || '';
     var fotoUrl = m.foto_url || '';
     document.getElementById('img-url-membro').value = fotoUrl;
-    document.getElementById('img-url-membro-text').value = fotoUrl;
     mostrarPreviewImg('img-preview-membro', fotoUrl);
     form.lattes_url.value = m.lattes_url || '';
     form.orcid_url.value = m.orcid_url || '';
@@ -944,7 +938,6 @@
 
   function limparPreviewImprensa() {
     document.getElementById('img-url-imprensa').value = '';
-    document.getElementById('img-url-imprensa-text').value = '';
     mostrarPreviewImg('img-preview-imprensa', null);
   }
 
@@ -971,7 +964,6 @@
     form.url.value = it.url || '';
     var imgUrlVal = it.imagem_url || '';
     document.getElementById('img-url-imprensa').value = imgUrlVal;
-    document.getElementById('img-url-imprensa-text').value = imgUrlVal;
     mostrarPreviewImg('img-preview-imprensa', imgUrlVal);
     form.descricao_curta.value = it.descricao_curta || '';
     form.descricao.value = it.descricao || '';
@@ -1077,7 +1069,7 @@
     }
   }
 
-  function setupImgUpload(fileId, boxId, hiddenId, textId, maxLado) {
+  function setupImgUpload(fileId, boxId, hiddenId, maxLado) {
     document.getElementById(fileId).addEventListener('change', function () {
       var file = this.files[0];
       if (!file) return;
@@ -1086,17 +1078,10 @@
       });
       this.value = '';
     });
-    document.getElementById(textId).addEventListener('input', function () {
-      document.getElementById(hiddenId).value = this.value;
-      if (!this.value) mostrarPreviewImg(boxId, null);
-    });
-    document.getElementById(textId).addEventListener('blur', function () {
-      if (this.value) mostrarPreviewImg(boxId, this.value);
-    });
   }
 
-  setupImgUpload('img-file-imprensa', 'img-preview-imprensa', 'img-url-imprensa', 'img-url-imprensa-text', 1200);
-  setupImgUpload('img-file-membro',   'img-preview-membro',   'img-url-membro',   'img-url-membro-text',   600);
+  setupImgUpload('img-file-imprensa', 'img-preview-imprensa', 'img-url-imprensa', 1200);
+  setupImgUpload('img-file-membro',   'img-preview-membro',   'img-url-membro',   600);
 
   carregar();
 </script>
