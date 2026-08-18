@@ -58,14 +58,15 @@
 
   /* ── Descrições ── */
   .detalhe-desc-curta {
-    font-size: clamp(1.05rem, 1.5vw, 1.2rem); color: var(--white);
-    line-height: 1.75; font-weight: 500;
-    text-align: justify; margin-bottom: 28px;
+    font-size: clamp(0.95rem, 1.3vw, 1.05rem); color: var(--white);
+    line-height: 1.75; text-align: justify; margin-bottom: 24px;
   }
   .detalhe-desc {
-    font-size: clamp(0.97rem, 1.4vw, 1.05rem); color: var(--body);
-    line-height: 1.85; text-align: justify; margin-bottom: 44px;
+    font-size: clamp(0.9rem, 1.2vw, 1rem); color: var(--body);
+    line-height: 1.85; text-align: justify; margin-bottom: 40px;
   }
+  .detalhe-desc-curta p, .detalhe-desc p { margin-bottom: 1em; }
+  .detalhe-desc-curta p:last-child, .detalhe-desc p:last-child { margin-bottom: 0; }
 
   /* ── CTA artigo ── */
   .btn-artigo {
@@ -124,9 +125,9 @@
 
         <h1 class="detalhe-titulo" id="detalhe-titulo"></h1>
 
-        <p class="detalhe-desc-curta" id="detalhe-desc-curta"></p>
+        <div class="detalhe-desc-curta" id="detalhe-desc-curta"></div>
 
-        <p class="detalhe-desc" id="detalhe-desc"></p>
+        <div class="detalhe-desc" id="detalhe-desc"></div>
 
         <hr class="detalhe-divider" id="detalhe-divider" style="display:none" />
 
@@ -152,6 +153,14 @@
 
   function esc(s) {
     return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function formatarTexto(texto) {
+    var s = String(texto || '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return s.split(/\n{2,}/)
+      .map(function (p) { return '<p>' + p.replace(/\n/g, '<br>') + '</p>'; })
+      .join('');
   }
 
   function formatarData(d) {
@@ -212,7 +221,7 @@
       // Descrição curta (lede)
       var descCurtaEl = document.getElementById('detalhe-desc-curta');
       if (it.descricao_curta) {
-        descCurtaEl.textContent = it.descricao_curta;
+        descCurtaEl.innerHTML = formatarTexto(it.descricao_curta);
       } else {
         descCurtaEl.style.display = 'none';
       }
@@ -220,7 +229,7 @@
       // Descrição completa
       var descEl = document.getElementById('detalhe-desc');
       if (it.descricao) {
-        descEl.textContent = it.descricao;
+        descEl.innerHTML = formatarTexto(it.descricao);
       } else {
         descEl.style.display = 'none';
       }
