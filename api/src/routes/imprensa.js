@@ -5,7 +5,7 @@ const { pool } = require('../db');
 router.get('/', async (req, res) => {
   try {
     const { tipo } = req.query;
-    let q = `SELECT id, titulo, veiculo, tipo, data_publicacao, url, descricao, imagem_url, destaque
+    let q = `SELECT id, titulo, veiculo, tipo, data_publicacao, url, descricao, descricao_curta, imagem_url, destaque
              FROM imprensa WHERE ativo = TRUE`;
     const params = [];
     if (tipo) { params.push(tipo); q += ` AND tipo = $${params.length}`; }

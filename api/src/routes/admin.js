@@ -138,13 +138,13 @@ router.get('/imprensa', async (_req, res) => {
 
 // POST /api/admin/imprensa
 router.post('/imprensa', async (req, res) => {
-  const { titulo, veiculo, tipo, data_publicacao, url, descricao, imagem_url, destaque, ativo } = req.body;
+  const { titulo, veiculo, tipo, data_publicacao, url, descricao, descricao_curta, imagem_url, destaque, ativo } = req.body;
   if (!titulo) return res.status(400).json({ erro: 'Título obrigatório' });
   try {
     const { rows } = await pool.query(
-      `INSERT INTO imprensa (titulo, veiculo, tipo, data_publicacao, url, descricao, imagem_url, destaque, ativo)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
-      [titulo, veiculo, tipo || 'materia', data_publicacao || null, url, descricao, imagem_url, destaque === true, ativo !== false]
+      `INSERT INTO imprensa (titulo, veiculo, tipo, data_publicacao, url, descricao, descricao_curta, imagem_url, destaque, ativo)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
+      [titulo, veiculo, tipo || 'materia', data_publicacao || null, url, descricao, descricao_curta || null, imagem_url, destaque === true, ativo !== false]
     );
     res.status(201).json(rows[0]);
   } catch (err) {
@@ -155,14 +155,14 @@ router.post('/imprensa', async (req, res) => {
 
 // PUT /api/admin/imprensa/:id
 router.put('/imprensa/:id', async (req, res) => {
-  const { titulo, veiculo, tipo, data_publicacao, url, descricao, imagem_url, destaque, ativo } = req.body;
+  const { titulo, veiculo, tipo, data_publicacao, url, descricao, descricao_curta, imagem_url, destaque, ativo } = req.body;
   if (!titulo) return res.status(400).json({ erro: 'Título obrigatório' });
   try {
     const { rows } = await pool.query(
       `UPDATE imprensa SET titulo=$1, veiculo=$2, tipo=$3, data_publicacao=$4, url=$5,
-        descricao=$6, imagem_url=$7, destaque=$8, ativo=$9
-       WHERE id=$10 RETURNING *`,
-      [titulo, veiculo, tipo || 'materia', data_publicacao || null, url, descricao, imagem_url, destaque === true, ativo !== false, req.params.id]
+        descricao=$6, descricao_curta=$7, imagem_url=$8, destaque=$9, ativo=$10
+       WHERE id=$11 RETURNING *`,
+      [titulo, veiculo, tipo || 'materia', data_publicacao || null, url, descricao, descricao_curta || null, imagem_url, destaque === true, ativo !== false, req.params.id]
     );
     if (!rows.length) return res.status(404).json({ erro: 'Item não encontrado' });
     res.json(rows[0]);
@@ -181,6 +181,32 @@ router.delete('/imprensa/:id', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ erro: 'Erro ao remover item' });
+  }
+});
+
+// POST /api/admin/upload — armazena imagem como base64 no banco
+router.post('/upload', async (req, res) => {
+  const { dados, nome } = req.body;
+  if (!dados || !dados.startsWith('data:')) {
+    return res.status(400).json({ erro: 'Campo "dados" deve ser um data URI válido' });
+  }
+  // Extrair mime e base64 puro
+  const match = dados.match(/^data:([^;]+);base64,(.+)$/s);
+  if (!match) return res.status(400).json({ erro: 'Formato de data URI inválido' });
+  const mime = match[1];
+  const base64 = match[2];
+  if (base64.length > 350000) {
+    return res.status(413).json({ erro: 'Imagem muito grande (máx ~256 KB após compressão)' });
+  }
+  try {
+    const { rows } = await pool.query(
+      `INSERT INTO imagens (dados, mime, nome) VALUES ($1,$2,$3) RETURNING id`,
+      [base64, mime, nome || null]
+    );
+    res.status(201).json({ url: '/api/imagens/' + rows[0].id });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao salvar imagem' });
   }
 });
 

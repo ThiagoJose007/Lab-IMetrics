@@ -60,6 +60,18 @@ async function initDB() {
       criado_em        TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
   `);
+  // Migrações seguras: colunas adicionadas sem recriar a tabela
+  await pool.query(`ALTER TABLE imprensa ADD COLUMN IF NOT EXISTS descricao_curta TEXT;`);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS imagens (
+      id        SERIAL PRIMARY KEY,
+      dados     TEXT NOT NULL,
+      mime      TEXT NOT NULL DEFAULT 'image/jpeg',
+      nome      TEXT,
+      criado_em TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `);
   console.log('Banco de dados pronto.');
 }
 

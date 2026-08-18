@@ -130,6 +130,30 @@
     .main { padding: 20px 16px 60px; }
     .topbar-nav { display: none; }
   }
+
+  /* ── Image upload widget ── */
+  .img-upload-wrap { display: flex; flex-direction: column; gap: 8px; }
+  .img-preview-box {
+    width: 100%; aspect-ratio: 16/9;
+    background: var(--surface-2); border: 1.5px dashed rgba(255,255,255,0.12);
+    border-radius: 8px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; position: relative; transition: border-color .2s;
+  }
+  .img-preview-box.square { aspect-ratio: 1/1; max-width: 110px; border-radius: 50%; }
+  .img-preview-box:hover { border-color: rgba(255,255,255,0.28); }
+  .img-preview-box img { width: 100%; height: 100%; object-fit: cover; display: block; position: absolute; inset: 0; }
+  .img-ph { font-family: var(--mono); font-size: 0.72rem; color: var(--body-dim); text-align: center; padding: 8px; pointer-events: none; }
+  .img-uploading { font-family: var(--mono); font-size: 0.72rem; color: var(--amber); }
+  .img-file { display: none; }
+  .img-url-label { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--body-dim); }
+  .img-url-ext {
+    font-family: var(--sans); font-size: 0.9rem; color: var(--white);
+    background: var(--surface-2); border: 1.5px solid var(--line); border-radius: 8px;
+    padding: 10px 13px; transition: border-color .2s; width: 100%;
+  }
+  .img-url-ext:focus { outline: none; border-color: rgba(255,255,255,0.3); }
+  .img-url-ext::placeholder { color: var(--body-dim); }
 </style>
 </head>
 <body>
@@ -374,9 +398,17 @@
           <label>Ordem de exibição</label>
           <input type="number" name="ordem" placeholder="0" min="0" />
         </div>
-        <div class="field">
-          <label>URL da foto</label>
-          <input type="url" name="foto_url" placeholder="https://…/foto.jpg" />
+        <div class="field span2">
+          <label>Foto</label>
+          <div class="img-upload-wrap">
+            <div class="img-preview-box square" id="img-preview-membro" onclick="document.getElementById('img-file-membro').click()" title="Clique para escolher">
+              <span class="img-ph">Foto</span>
+            </div>
+            <input type="file" id="img-file-membro" accept="image/*" class="img-file" />
+            <span class="img-url-label">ou cole uma URL externa</span>
+            <input type="url" class="img-url-ext" id="img-url-membro-text" placeholder="https://…/foto.jpg" />
+            <input type="hidden" name="foto_url" id="img-url-membro" />
+          </div>
         </div>
         <div class="field">
           <label>Lattes URL</label>
@@ -436,12 +468,24 @@
           <input type="url" name="url" placeholder="https://…" />
         </div>
         <div class="field span2">
-          <label>URL da imagem (thumbnail)</label>
-          <input type="url" name="imagem_url" placeholder="https://…/imagem.jpg" />
+          <label>Imagem (thumbnail)</label>
+          <div class="img-upload-wrap">
+            <div class="img-preview-box" id="img-preview-imprensa" onclick="document.getElementById('img-file-imprensa').click()" title="Clique para escolher">
+              <span class="img-ph">Clique para escolher imagem</span>
+            </div>
+            <input type="file" id="img-file-imprensa" accept="image/*" class="img-file" />
+            <span class="img-url-label">ou cole uma URL externa</span>
+            <input type="url" class="img-url-ext" id="img-url-imprensa-text" placeholder="https://…/imagem.jpg" />
+            <input type="hidden" name="imagem_url" id="img-url-imprensa" />
+          </div>
         </div>
         <div class="field span2">
-          <label>Descrição</label>
-          <textarea name="descricao" placeholder="Breve descrição ou trecho da matéria…"></textarea>
+          <label>Descrição curta</label>
+          <textarea name="descricao_curta" placeholder="Resumo breve exibido no card (opcional)…" style="min-height:70px;"></textarea>
+        </div>
+        <div class="field span2">
+          <label>Descrição completa</label>
+          <textarea name="descricao" placeholder="Texto completo exibido no modal de detalhes…"></textarea>
         </div>
         <div class="field">
           <label>Status</label>
@@ -728,11 +772,19 @@
     document.getElementById('overlay-membro').classList.remove('open');
     document.getElementById('form-membro').reset();
     editandoMembroId = null;
+    limparPreviewMembro();
+  }
+
+  function limparPreviewMembro() {
+    document.getElementById('img-url-membro').value = '';
+    document.getElementById('img-url-membro-text').value = '';
+    mostrarPreviewImg('img-preview-membro', null);
   }
 
   document.getElementById('btn-novo-membro').addEventListener('click', function () {
     editandoMembroId = null;
     document.getElementById('modal-membro-title').textContent = 'Novo membro';
+    limparPreviewMembro();
     document.getElementById('overlay-membro').classList.add('open');
   });
   document.getElementById('modal-membro-close').addEventListener('click', fecharModalMembro);
@@ -750,7 +802,10 @@
     form.area.value = m.area || '';
     form.categoria.value = m.categoria || 'doutor';
     form.nivel.value = m.nivel || '';
-    form.foto_url.value = m.foto_url || '';
+    var fotoUrl = m.foto_url || '';
+    document.getElementById('img-url-membro').value = fotoUrl;
+    document.getElementById('img-url-membro-text').value = fotoUrl;
+    mostrarPreviewImg('img-preview-membro', fotoUrl);
     form.lattes_url.value = m.lattes_url || '';
     form.orcid_url.value = m.orcid_url || '';
     form.ativo.value = m.ativo ? 'true' : 'false';
@@ -873,11 +928,19 @@
     document.getElementById('overlay-imprensa').classList.remove('open');
     document.getElementById('form-imprensa').reset();
     editandoImprensaId = null;
+    limparPreviewImprensa();
+  }
+
+  function limparPreviewImprensa() {
+    document.getElementById('img-url-imprensa').value = '';
+    document.getElementById('img-url-imprensa-text').value = '';
+    mostrarPreviewImg('img-preview-imprensa', null);
   }
 
   document.getElementById('btn-novo-imprensa').addEventListener('click', function () {
     editandoImprensaId = null;
     document.getElementById('modal-imprensa-title').textContent = 'Novo item de imprensa';
+    limparPreviewImprensa();
     document.getElementById('overlay-imprensa').classList.add('open');
   });
   document.getElementById('modal-imprensa-close').addEventListener('click', fecharModalImprensa);
@@ -895,7 +958,11 @@
     form.tipo.value = it.tipo || 'materia';
     form.data_publicacao.value = it.data_publicacao ? it.data_publicacao.slice(0, 10) : '';
     form.url.value = it.url || '';
-    form.imagem_url.value = it.imagem_url || '';
+    var imgUrlVal = it.imagem_url || '';
+    document.getElementById('img-url-imprensa').value = imgUrlVal;
+    document.getElementById('img-url-imprensa-text').value = imgUrlVal;
+    mostrarPreviewImg('img-preview-imprensa', imgUrlVal);
+    form.descricao_curta.value = it.descricao_curta || '';
     form.descricao.value = it.descricao || '';
     form.destaque.value = it.destaque ? 'true' : 'false';
     form.ativo.value = it.ativo ? 'true' : 'false';
@@ -914,6 +981,7 @@
       data_publicacao: form.data_publicacao.value || null,
       url:             form.url.value || null,
       imagem_url:      form.imagem_url.value || null,
+      descricao_curta: form.descricao_curta.value || null,
       descricao:       form.descricao.value || null,
       destaque:        form.destaque.value === 'true',
       ativo:           form.ativo.value === 'true',
@@ -942,6 +1010,82 @@
       carregarImprensa();
     } catch { toast('Erro ao excluir.', 'err'); }
   }
+
+  // ── Image Upload ──
+
+  function imgResolveUrl(url) {
+    if (!url) return '';
+    return url.startsWith('/api/imagens/') ? API_URL + url : url;
+  }
+
+  function mostrarPreviewImg(boxId, url) {
+    var box = document.getElementById(boxId);
+    if (!url) {
+      box.innerHTML = '<span class="img-ph">Clique para escolher imagem</span>';
+      return;
+    }
+    var src = imgResolveUrl(url);
+    box.innerHTML = '<img src="' + esc(src) + '" alt="preview" onerror="this.parentNode.innerHTML=\'<span class=\\\"img-ph\\\">URL inválida</span>\'" />';
+  }
+
+  function comprimirImagem(file, maxLado, qualidade, cb) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var img = new Image();
+      img.onload = function () {
+        var escala = Math.min(1, maxLado / Math.max(img.width, img.height));
+        var canvas = document.createElement('canvas');
+        canvas.width  = Math.round(img.width  * escala);
+        canvas.height = Math.round(img.height * escala);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        cb(canvas.toDataURL('image/jpeg', qualidade), file.name);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function fazerUpload(base64, nome, boxId, urlHiddenId) {
+    var box = document.getElementById(boxId);
+    box.innerHTML = '<span class="img-uploading">Enviando…</span>';
+    try {
+      var res = await fetch(API_URL + '/api/admin/upload', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ dados: base64, nome: nome })
+      });
+      if (res.status === 401) { tratar401(); return; }
+      if (!res.ok) throw new Error();
+      var data = await res.json();
+      document.getElementById(urlHiddenId).value = data.url;
+      mostrarPreviewImg(boxId, data.url);
+      toast('Imagem enviada!', 'ok');
+    } catch {
+      box.innerHTML = '<span class="img-ph">Erro no upload — tente novamente</span>';
+      toast('Erro ao enviar imagem.', 'err');
+    }
+  }
+
+  function setupImgUpload(fileId, boxId, hiddenId, textId, maxLado) {
+    document.getElementById(fileId).addEventListener('change', function () {
+      var file = this.files[0];
+      if (!file) return;
+      comprimirImagem(file, maxLado || 1200, 0.82, function (b64, nome) {
+        fazerUpload(b64, nome, boxId, hiddenId);
+      });
+      this.value = '';
+    });
+    document.getElementById(textId).addEventListener('input', function () {
+      document.getElementById(hiddenId).value = this.value;
+      if (!this.value) mostrarPreviewImg(boxId, null);
+    });
+    document.getElementById(textId).addEventListener('blur', function () {
+      if (this.value) mostrarPreviewImg(boxId, this.value);
+    });
+  }
+
+  setupImgUpload('img-file-imprensa', 'img-preview-imprensa', 'img-url-imprensa', 'img-url-imprensa-text', 1200);
+  setupImgUpload('img-file-membro',   'img-preview-membro',   'img-url-membro',   'img-url-membro-text',   600);
 
   carregar();
 </script>
