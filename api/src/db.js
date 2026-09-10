@@ -60,9 +60,27 @@ async function initDB() {
       criado_em        TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
   `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS convites (
+      id                 SERIAL PRIMARY KEY,
+      token              TEXT UNIQUE NOT NULL,
+      rotulo             TEXT,
+      categoria_sugerida TEXT,
+      expira_em          TIMESTAMPTZ NOT NULL,
+      usos               INTEGER NOT NULL DEFAULT 0,
+      usos_max           INTEGER,
+      revogado           BOOLEAN NOT NULL DEFAULT FALSE,
+      criado_em          TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `);
+
   // Migrações seguras: colunas adicionadas sem recriar a tabela
   await pool.query(`ALTER TABLE membros ADD COLUMN IF NOT EXISTS titulo TEXT;`);
   await pool.query(`ALTER TABLE imprensa ADD COLUMN IF NOT EXISTS descricao_curta TEXT;`);
+  // Auto-cadastro: 'pendente' aguarda aprovação do admin, 'aprovado' pode ir ao ar.
+  // Membros já existentes viram 'aprovado' pelo DEFAULT.
+  await pool.query(`ALTER TABLE membros ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'aprovado';`);
+  await pool.query(`ALTER TABLE membros ADD COLUMN IF NOT EXISTS origem_convite INTEGER;`);
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS imagens (

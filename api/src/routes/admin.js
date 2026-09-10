@@ -1,6 +1,8 @@
 const router = require('express').Router();
+const crypto = require('crypto');
 const { pool } = require('../db');
 const autenticar = require('../middleware/auth');
+const { salvarImagem } = require('../lib/salvarImagem');
 
 // Todas as rotas abaixo exigem token JWT válido
 router.use(autenticar);
@@ -163,7 +165,8 @@ router.put('/membros/:id', async (req, res) => {
   try {
     const { rows } = await pool.query(
       `UPDATE membros SET nome=$1, papel=$2, area=$3, categoria=$4, titulo=$5, nivel=$6,
-        foto_url=$7, lattes_url=$8, orcid_url=$9, ativo=$10, ordem=$11
+        foto_url=$7, lattes_url=$8, orcid_url=$9, ativo=$10, ordem=$11,
+        status = CASE WHEN $10 THEN 'aprovado' ELSE status END
        WHERE id=$12 RETURNING *`,
       [nome, papel, area, categoria || 'doutor', titulo || null, nivel, foto_url, lattes_url, orcid_url, ativo !== false, ordem || 0, req.params.id]
     );
@@ -184,6 +187,79 @@ router.delete('/membros/:id', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ erro: 'Erro ao remover membro' });
+  }
+});
+
+// PATCH /api/admin/membros/:id/aprovar — publica um cadastro vindo de convite
+router.patch('/membros/:id/aprovar', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `UPDATE membros SET status = 'aprovado', ativo = TRUE WHERE id = $1 RETURNING *`,
+      [req.params.id]
+    );
+    if (!rows.length) return res.status(404).json({ erro: 'Membro não encontrado' });
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao aprovar membro' });
+  }
+});
+
+// ── CONVITES (auto-cadastro da equipe) ──
+
+// GET /api/admin/convites — lista com o estado já calculado
+router.get('/convites', async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT c.*,
+              (c.revogado OR c.expira_em <= NOW()
+                OR (c.usos_max IS NOT NULL AND c.usos >= c.usos_max)) AS encerrado,
+              (SELECT COUNT(*) FROM membros m
+                WHERE m.origem_convite = c.id AND m.status = 'pendente') AS pendentes
+         FROM convites c ORDER BY c.criado_em DESC`
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao buscar convites' });
+  }
+});
+
+// POST /api/admin/convites — gera um link multi-uso
+router.post('/convites', async (req, res) => {
+  const dias = Math.min(Math.max(parseInt(req.body.dias, 10) || 7, 1), 90);
+  const usosMax = parseInt(req.body.usos_max, 10);
+  try {
+    const { rows } = await pool.query(
+      `INSERT INTO convites (token, rotulo, categoria_sugerida, expira_em, usos_max)
+       VALUES ($1, $2, $3, NOW() + ($4 || ' days')::INTERVAL, $5) RETURNING *`,
+      [
+        crypto.randomBytes(18).toString('base64url'),
+        req.body.rotulo || null,
+        req.body.categoria_sugerida || null,
+        String(dias),
+        usosMax > 0 ? usosMax : null,
+      ]
+    );
+    res.status(201).json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao gerar convite' });
+  }
+});
+
+// DELETE /api/admin/convites/:id — revoga na hora, mas mantém o histórico
+router.delete('/convites/:id', async (req, res) => {
+  try {
+    const { rowCount } = await pool.query(
+      'UPDATE convites SET revogado = TRUE WHERE id = $1',
+      [req.params.id]
+    );
+    if (!rowCount) return res.status(404).json({ erro: 'Convite não encontrado' });
+    res.json({ mensagem: 'Convite revogado' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao revogar convite' });
   }
 });
 
@@ -252,24 +328,10 @@ router.delete('/imprensa/:id', async (req, res) => {
 
 // POST /api/admin/upload — armazena imagem como base64 no banco
 router.post('/upload', async (req, res) => {
-  const { dados, nome } = req.body;
-  if (!dados || !dados.startsWith('data:')) {
-    return res.status(400).json({ erro: 'Campo "dados" deve ser um data URI válido' });
-  }
-  // Extrair mime e base64 puro
-  const match = dados.match(/^data:([^;]+);base64,(.+)$/s);
-  if (!match) return res.status(400).json({ erro: 'Formato de data URI inválido' });
-  const mime = match[1];
-  const base64 = match[2];
-  if (base64.length > 350000) {
-    return res.status(413).json({ erro: 'Imagem muito grande (máx ~256 KB após compressão)' });
-  }
   try {
-    const { rows } = await pool.query(
-      `INSERT INTO imagens (dados, mime, nome) VALUES ($1,$2,$3) RETURNING id`,
-      [base64, mime, nome || null]
-    );
-    res.status(201).json({ url: '/api/imagens/' + rows[0].id });
+    const resultado = await salvarImagem(req.body.dados, req.body.nome);
+    if (resultado.erro) return res.status(resultado.status).json({ erro: resultado.erro });
+    res.status(201).json(resultado);
   } catch (err) {
     console.error(err);
     res.status(500).json({ erro: 'Erro ao salvar imagem' });
