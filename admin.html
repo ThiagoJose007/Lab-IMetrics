@@ -185,6 +185,41 @@
   }
   .btn-secondary:hover { background: rgba(26,188,156,0.1); }
 
+  /* ── Filtros (pílulas) ── */
+  .filtros { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .filtro-btn {
+    font-family: var(--sans); font-size: 0.82rem; color: var(--body);
+    background: none; border: 1px solid var(--line); border-radius: 100px;
+    padding: 6px 15px; cursor: pointer; transition: all .2s;
+  }
+  .filtro-btn:hover { color: var(--white); border-color: rgba(255,255,255,0.25); }
+  .filtro-btn.active { color: var(--amber); border-color: rgba(243,156,18,0.45); background: rgba(243,156,18,0.08); }
+  .filtro-btn .cont { font-family: var(--mono); font-size: 0.72rem; opacity: 0.75; margin-left: 5px; }
+
+  .btn-ok {
+    font-size: 0.8rem; font-family: var(--sans); font-weight: 700; padding: 5px 12px; border-radius: 6px;
+    cursor: pointer; transition: all .2s; background: var(--amber); color: #0B1120; border: 1px solid var(--amber);
+  }
+  .btn-ok:hover { opacity: 0.85; }
+
+  /* ── Convites ── */
+  .convite-link {
+    display: flex; gap: 10px; align-items: center; margin-top: 8px;
+    background: var(--surface-2); border: 1.5px solid rgba(243,156,18,0.35); border-radius: 8px; padding: 10px 12px;
+  }
+  .convite-link input {
+    flex: 1; min-width: 0; font-family: var(--mono); font-size: 0.8rem; color: var(--white);
+    background: none; border: none; padding: 0;
+  }
+  .convite-link input:focus { outline: none; }
+  .convite-novo { background: rgba(243,156,18,0.07); border: 1px solid rgba(243,156,18,0.25); border-radius: 8px; padding: 16px; margin-bottom: 22px; }
+  .convite-novo .titulo { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); margin-bottom: 6px; }
+  .convite-novo p { font-size: 0.85rem; color: var(--body); line-height: 1.55; }
+  .convite-lista { border: 1px solid var(--line); border-radius: 10px; overflow-x: auto; }
+  .convite-vazio { padding: 28px 20px; text-align: center; color: var(--body-dim); font-size: 0.9rem; }
+  .sep-modal { border: none; border-top: 1px solid var(--line); margin: 28px 0 22px; }
+  .modal h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 14px; color: var(--white); }
+
   /* ── Modal de importação CSV ── */
   .overlay-wide .modal { max-width: 860px; }
   .import-hint { font-size: 0.9rem; color: var(--body); line-height: 1.6; margin-bottom: 20px; }
@@ -285,7 +320,13 @@
 
     <div class="action-bar">
       <input class="search-input" id="busca-membro" type="search" placeholder="Buscar por nome…" />
+      <button class="btn-secondary" id="btn-convites">Link de convite</button>
       <button class="btn-primary" id="btn-novo-membro">+ Novo membro</button>
+    </div>
+
+    <div class="filtros" id="filtros-membro">
+      <button class="filtro-btn active" data-filtro="todos">Todos<span class="cont" id="cont-todos"></span></button>
+      <button class="filtro-btn" data-filtro="pendente">Aguardando aprovação<span class="cont" id="cont-pendente"></span></button>
     </div>
 
     <div class="table-wrap">
@@ -557,6 +598,61 @@
         <button type="submit" class="btn-save" id="btn-save-membro">Salvar</button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- Modal de convites (auto-cadastro da equipe) -->
+<div class="overlay" id="overlay-convite">
+  <div class="modal">
+    <button class="modal-close" id="modal-convite-close">×</button>
+    <h2>Link de convite</h2>
+    <p class="import-hint">Gere um link e mande para a equipe (WhatsApp, e-mail, o que for). Quem abrir preenche o próprio perfil — nome, foto, área, Lattes e ORCID — e o cadastro cai aqui como <b>Aguardando aprovação</b>. Nada vai ao ar sem você aprovar.</p>
+
+    <div id="convite-novo-box" class="convite-novo" style="display:none">
+      <div class="titulo">Convite gerado</div>
+      <p>Copie e envie para a equipe. O link funciona para quantas pessoas você quiser até expirar.</p>
+      <div class="convite-link">
+        <input type="text" id="convite-novo-url" readonly />
+        <button type="button" class="btn-ok" id="btn-copiar-convite">Copiar</button>
+      </div>
+    </div>
+
+    <form id="form-convite">
+      <div class="form-grid">
+        <div class="field span2">
+          <label for="conv-rotulo">Identificação (só você vê)</label>
+          <input type="text" id="conv-rotulo" placeholder="Estudantes 2026 · turma do PPGCI" maxlength="120" />
+        </div>
+        <div class="field">
+          <label for="conv-categoria">Categoria sugerida</label>
+          <select id="conv-categoria">
+            <option value="">— deixar a pessoa escolher —</option>
+            <option value="coordenador">Coordenação</option>
+            <option value="doutor">Pesquisador(a)</option>
+            <option value="estudante">Estudante</option>
+            <option value="tecnico">Técnico(a)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="conv-dias">Validade (dias)</label>
+          <input type="number" id="conv-dias" value="7" min="1" max="90" />
+        </div>
+        <div class="field span2">
+          <label for="conv-usos">Limite de cadastros (opcional)</label>
+          <input type="number" id="conv-usos" placeholder="Em branco = sem limite até expirar" min="1" />
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="submit" class="btn-save" id="btn-gerar-convite">Gerar link</button>
+      </div>
+    </form>
+
+    <hr class="sep-modal" />
+
+    <h3>Convites criados</h3>
+    <div class="convite-lista" id="convite-lista">
+      <div class="convite-vazio">Carregando…</div>
+    </div>
   </div>
 </div>
 
@@ -865,8 +961,12 @@
       var res = await fetch(API_URL + '/api/admin/membros', { headers: authHeaders() });
       if (res.status === 401) { tratar401(); return; }
       membros = await res.json();
-      renderTabelaMembros(membros);
-      document.getElementById('stats-membro').innerHTML = 'Total: <b>' + membros.length + '</b> membros';
+      var pendentes = membros.filter(ehPendente).length;
+      document.getElementById('cont-todos').textContent = '(' + membros.length + ')';
+      document.getElementById('cont-pendente').textContent = pendentes ? '(' + pendentes + ')' : '';
+      document.getElementById('stats-membro').innerHTML = 'Total: <b>' + membros.length + '</b> membros'
+        + (pendentes ? ' · <b>' + pendentes + '</b> aguardando aprovação' : '');
+      aplicarFiltroMembros();
     } catch (e) {
       document.getElementById('tbody-membro').innerHTML = '<tr><td colspan="6"><div class="state-box"><b>Erro de conexão</b>Verifique se a API está rodando em ' + API_URL + '</div></td></tr>';
     }
@@ -875,35 +975,75 @@
   // ── Renderizar tabela membros ──
   var catLabel = { coordenador: 'Coordenação', doutor: 'Doutor', estudante: 'Estudante', tecnico: 'Técnico' };
 
+  function ehPendente(m) { return m.status === 'pendente'; }
+
   function renderTabelaMembros(lista) {
     var tbody = document.getElementById('tbody-membro');
     if (!lista.length) {
-      tbody.innerHTML = '<tr><td colspan="6"><div class="state-box"><b>Nenhum membro encontrado</b>Clique em "+ Novo membro" para começar.</div></td></tr>';
+      var vazio = filtroMembro === 'pendente'
+        ? '<b>Nenhum cadastro aguardando</b>Use "Link de convite" para a equipe se cadastrar sozinha.'
+        : '<b>Nenhum membro encontrado</b>Clique em "+ Novo membro" para começar.';
+      tbody.innerHTML = '<tr><td colspan="6"><div class="state-box">' + vazio + '</div></td></tr>';
       return;
     }
     tbody.innerHTML = lista.map(function (m) {
       var cat = catLabel[m.categoria] || m.categoria;
       var catClass = m.categoria === 'coordenador' ? ' amber' : m.categoria === 'doutor' ? ' teal' : '';
-      var ativo = m.ativo ? '<span class="badge teal">Ativo</span>' : '<span class="badge red">Inativo</span>';
+      var pendente = ehPendente(m);
+      var status = pendente
+        ? '<span class="badge amber">Aguardando</span>'
+        : (m.ativo ? '<span class="badge teal">Ativo</span>' : '<span class="badge red">Inativo</span>');
+      var nomeEsc = esc(m.nome).replace(/'/g, "\\'");
       return '<tr>' +
         '<td><span class="badge">' + m.id + '</span></td>' +
         '<td class="td-title"><div class="td-title-text">' + esc(m.nome) + '</div></td>' +
         '<td>' + esc(m.papel || '—') + '</td>' +
         '<td><span class="badge' + catClass + '">' + esc(cat) + '</span></td>' +
-        '<td>' + ativo + '</td>' +
+        '<td>' + status + '</td>' +
         '<td><div class="actions">' +
-          '<button class="btn-edit" onclick="abrirEditarMembro(' + m.id + ')">Editar</button>' +
-          '<button class="btn-del" onclick="excluirMembro(' + m.id + ', \'' + esc(m.nome).replace(/'/g, "\\'") + '\')">Excluir</button>' +
+          (pendente ? '<button class="btn-ok" onclick="aprovarMembro(' + m.id + ')">Aprovar</button>' : '') +
+          '<button class="btn-edit" onclick="abrirEditarMembro(' + m.id + ')">' + (pendente ? 'Revisar' : 'Editar') + '</button>' +
+          '<button class="btn-del" onclick="excluirMembro(' + m.id + ', \'' + nomeEsc + '\')">' + (pendente ? 'Recusar' : 'Excluir') + '</button>' +
         '</div></td>' +
       '</tr>';
     }).join('');
   }
 
-  // ── Busca membros ──
-  document.getElementById('busca-membro').addEventListener('input', function () {
-    var q = this.value.toLowerCase();
-    renderTabelaMembros(q ? membros.filter(function (m) { return m.nome.toLowerCase().includes(q); }) : membros);
+  // ── Busca + filtro de membros ──
+  var filtroMembro = 'todos';
+
+  function aplicarFiltroMembros() {
+    var q = document.getElementById('busca-membro').value.trim().toLowerCase();
+    var lista = filtroMembro === 'pendente' ? membros.filter(ehPendente) : membros;
+    if (q) lista = lista.filter(function (m) { return m.nome.toLowerCase().includes(q); });
+    renderTabelaMembros(lista);
+  }
+
+  document.getElementById('busca-membro').addEventListener('input', aplicarFiltroMembros);
+
+  document.querySelectorAll('#filtros-membro .filtro-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('#filtros-membro .filtro-btn').forEach(function (b) { b.classList.remove('active'); });
+      this.classList.add('active');
+      filtroMembro = this.dataset.filtro;
+      aplicarFiltroMembros();
+    });
   });
+
+  // ── Aprovar cadastro vindo de convite ──
+  async function aprovarMembro(id) {
+    try {
+      var res = await fetch(API_URL + '/api/admin/membros/' + id + '/aprovar', {
+        method: 'PATCH', headers: authHeaders()
+      });
+      if (res.status === 401) { tratar401(); return; }
+      if (!res.ok) throw new Error();
+      toast('Membro aprovado e publicado!', 'ok');
+      carregarMembros();
+    } catch {
+      toast('Erro ao aprovar.', 'err');
+    }
+  }
 
   // ── Modal membros ──
   function fecharModalMembro() {
@@ -932,7 +1072,8 @@
     var m = membros.find(function (x) { return x.id === id; });
     if (!m) return;
     editandoMembroId = id;
-    document.getElementById('modal-membro-title').textContent = 'Editar membro';
+    document.getElementById('modal-membro-title').textContent =
+      ehPendente(m) ? 'Revisar cadastro enviado' : 'Editar membro';
     var form = document.getElementById('form-membro');
     form.nome.value = m.nome || '';
     form.papel.value = m.papel || '';
@@ -1007,6 +1148,138 @@
       carregarMembros();
     } catch {
       toast('Erro ao excluir.', 'err');
+    }
+  }
+
+  // ── Convites (auto-cadastro da equipe) ──
+  function urlDoConvite(token) {
+    return window.location.origin + '/cadastro?c=' + token;
+  }
+
+  function fecharModalConvite() {
+    document.getElementById('overlay-convite').classList.remove('open');
+    document.getElementById('convite-novo-box').style.display = 'none';
+  }
+
+  document.getElementById('btn-convites').addEventListener('click', function () {
+    document.getElementById('convite-novo-box').style.display = 'none';
+    document.getElementById('overlay-convite').classList.add('open');
+    carregarConvites();
+  });
+  document.getElementById('modal-convite-close').addEventListener('click', fecharModalConvite);
+  document.getElementById('overlay-convite').addEventListener('click', function (e) { if (e.target === this) fecharModalConvite(); });
+
+  async function carregarConvites() {
+    var box = document.getElementById('convite-lista');
+    try {
+      var res = await fetch(API_URL + '/api/admin/convites', { headers: authHeaders() });
+      if (res.status === 401) { tratar401(); return; }
+      var lista = await res.json();
+      if (!lista.length) {
+        box.innerHTML = '<div class="convite-vazio">Nenhum convite criado ainda.</div>';
+        return;
+      }
+      box.innerHTML = '<table><thead><tr><th>Identificação</th><th>Expira</th><th>Cadastros</th><th>Situação</th><th>Ações</th></tr></thead><tbody>' +
+        lista.map(function (c) {
+          var expira = new Date(c.expira_em).toLocaleDateString('pt-BR');
+          var usos = c.usos + (c.usos_max ? ' / ' + c.usos_max : '');
+          var situacao = c.revogado
+            ? '<span class="badge red">Revogado</span>'
+            : (c.encerrado ? '<span class="badge">Encerrado</span>' : '<span class="badge teal">Ativo</span>');
+          var pendentes = Number(c.pendentes) > 0
+            ? ' <span class="badge amber">' + c.pendentes + ' aguardando</span>'
+            : '';
+          var acoes = c.encerrado
+            ? '—'
+            : '<button class="btn-edit" onclick="copiarConvite(\'' + esc(c.token) + '\', this)">Copiar link</button>' +
+              '<button class="btn-del" onclick="revogarConvite(' + c.id + ')">Revogar</button>';
+          return '<tr>' +
+            '<td class="td-title">' + esc(c.rotulo || 'Sem identificação') + '</td>' +
+            '<td>' + expira + '</td>' +
+            '<td>' + usos + pendentes + '</td>' +
+            '<td>' + situacao + '</td>' +
+            '<td><div class="actions">' + acoes + '</div></td>' +
+          '</tr>';
+        }).join('') + '</tbody></table>';
+    } catch {
+      box.innerHTML = '<div class="convite-vazio">Erro ao carregar convites.</div>';
+    }
+  }
+
+  function copiarTexto(texto, btn) {
+    var rotuloOriginal = btn ? btn.textContent : null;
+    function feedback() {
+      if (!btn) return;
+      btn.textContent = 'Copiado!';
+      setTimeout(function () { btn.textContent = rotuloOriginal; }, 1800);
+    }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(texto).then(feedback, function () { toast('Copie manualmente: ' + texto, 'err'); });
+      return;
+    }
+    // http puro (sem TLS) não tem clipboard API — cai no truque do input temporário
+    var tmp = document.createElement('input');
+    tmp.value = texto;
+    document.body.appendChild(tmp);
+    tmp.select();
+    try { document.execCommand('copy'); feedback(); } catch { toast('Copie manualmente: ' + texto, 'err'); }
+    document.body.removeChild(tmp);
+  }
+
+  function copiarConvite(token, btn) {
+    copiarTexto(urlDoConvite(token), btn);
+  }
+
+  document.getElementById('btn-copiar-convite').addEventListener('click', function () {
+    copiarTexto(document.getElementById('convite-novo-url').value, this);
+  });
+
+  document.getElementById('form-convite').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var btn = document.getElementById('btn-gerar-convite');
+    btn.disabled = true;
+    btn.textContent = 'Gerando…';
+    var usos = document.getElementById('conv-usos').value;
+    try {
+      var res = await fetch(API_URL + '/api/admin/convites', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({
+          rotulo: document.getElementById('conv-rotulo').value.trim() || null,
+          categoria_sugerida: document.getElementById('conv-categoria').value || null,
+          dias: parseInt(document.getElementById('conv-dias').value, 10) || 7,
+          usos_max: usos ? parseInt(usos, 10) : null
+        })
+      });
+      if (res.status === 401) { tratar401(); return; }
+      if (!res.ok) throw new Error();
+      var convite = await res.json();
+      document.getElementById('convite-novo-url').value = urlDoConvite(convite.token);
+      document.getElementById('convite-novo-box').style.display = '';
+      document.getElementById('form-convite').reset();
+      document.getElementById('conv-dias').value = 7;
+      toast('Convite gerado!', 'ok');
+      carregarConvites();
+    } catch {
+      toast('Erro ao gerar convite.', 'err');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Gerar link';
+    }
+  });
+
+  async function revogarConvite(id) {
+    if (!confirm('Revogar este convite?\nQuem já recebeu o link não conseguirá mais se cadastrar.')) return;
+    try {
+      var res = await fetch(API_URL + '/api/admin/convites/' + id, {
+        method: 'DELETE', headers: authHeaders()
+      });
+      if (res.status === 401) { tratar401(); return; }
+      if (!res.ok) throw new Error();
+      toast('Convite revogado.', 'ok');
+      carregarConvites();
+    } catch {
+      toast('Erro ao revogar.', 'err');
     }
   }
 
