@@ -336,7 +336,7 @@
             <th>#</th>
             <th>Nome</th>
             <th>Papel</th>
-            <th>Categoria</th>
+            <th>Categoria / Título</th>
             <th>Status</th>
             <th>Ações</th>
           </tr>
@@ -973,7 +973,10 @@
   }
 
   // ── Renderizar tabela membros ──
-  var catLabel = { coordenador: 'Coordenação', doutor: 'Doutor', estudante: 'Estudante', tecnico: 'Técnico' };
+  // Os rótulos abaixo precisam bater com os <option> do modal — categoria 'doutor'
+  // é "Pesquisador(a)" lá, e chamá-la de "Doutor" aqui confunde com o título acadêmico.
+  var catLabel = { coordenador: 'Coordenação', doutor: 'Pesquisador(a)', estudante: 'Estudante', tecnico: 'Técnico(a)' };
+  var tituloLabel = { doutor: 'Doutor(a)', mestre: 'Mestre(a)', graduando: 'Graduando(a)' };
 
   function ehPendente(m) { return m.status === 'pendente'; }
 
@@ -998,7 +1001,8 @@
         '<td><span class="badge">' + m.id + '</span></td>' +
         '<td class="td-title"><div class="td-title-text">' + esc(m.nome) + '</div></td>' +
         '<td>' + esc(m.papel || '—') + '</td>' +
-        '<td><span class="badge' + catClass + '">' + esc(cat) + '</span></td>' +
+        '<td><span class="badge' + catClass + '">' + esc(cat) + '</span>' +
+          (m.titulo ? ' <span class="badge">' + esc(tituloLabel[m.titulo] || m.titulo) + '</span>' : '') + '</td>' +
         '<td>' + status + '</td>' +
         '<td><div class="actions">' +
           (pendente ? '<button class="btn-ok" onclick="aprovarMembro(' + m.id + ')">Aprovar</button>' : '') +
